@@ -1,0 +1,38 @@
+﻿using Microsoft.AspNetCore.WebUtilities;
+using System.Security.Cryptography;
+using AuthService.Application.Abstractions.Crypto;
+using AuthService.Infrastructure.Crypto.Exceptions;
+
+namespace AuthService.Infrastructure.Crypto
+{
+    public class TokenGenerator : ITokenGenerator
+    {
+        public string Generate(int dataLength = 32)
+        {
+            if (dataLength < 0)
+                throw new InvalidDataLengthException(dataLength);
+
+            if (dataLength == 0)
+                return string.Empty;
+
+            byte[] data = new byte[dataLength];
+            RandomNumberGenerator.Fill(data);
+
+            return Convert.ToBase64String(data);
+        }
+
+        public string GenerateBase64UrlSafe(int dataLength = 32)
+        {
+            if (dataLength < 0)
+                throw new InvalidDataLengthException(dataLength);
+
+            if (dataLength == 0)
+                return string.Empty;
+
+            byte[] data = new byte[dataLength];
+            RandomNumberGenerator.Fill(data);
+
+            return WebEncoders.Base64UrlEncode(data);
+        }
+    }
+}

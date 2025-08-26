@@ -1,0 +1,29 @@
+﻿using Cayd.AspNetCore.ExecutionResult;
+using Cayd.AspNetCore.ExecutionResult.Success;
+using Cayd.AspNetCore.Mediator.Abstractions;
+using AuthService.Application.Abstractions.UOW;
+
+namespace AuthService.Application.Features.Queries.Admin.GetUser
+{
+    public class GetUserHandler : IAsyncHandler<GetUserRequest, ExecResult<GetUserResponse>>
+    {
+        private readonly IUnitOfWork _unitOfWork;
+
+        public GetUserHandler(IUnitOfWork unitOfWork)
+        {
+            _unitOfWork = unitOfWork;
+        }
+
+        public async Task<ExecResult<GetUserResponse>> HandleAsync(GetUserRequest request, CancellationToken cancellationToken)
+        {
+            var user = await _unitOfWork.Users.GetWithFullContextByIdAsync(request.Id!.Value, cancellationToken);
+            if (user == null)
+                return new ExecNoContent<GetUserResponse>();
+
+            return new GetUserResponse()
+            {
+                User = user
+            };
+        }
+    }
+}

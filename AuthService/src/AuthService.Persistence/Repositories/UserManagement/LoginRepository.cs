@@ -1,0 +1,59 @@
+﻿using Microsoft.EntityFrameworkCore;
+using AuthService.Domain.Entities.UserManagement;
+using AuthService.Domain.Repositories.UserManagement;
+using AuthService.Persistence.DbContexts;
+
+namespace AuthService.Persistence.Repositories.UserManagement
+{
+    public class LoginRepository : ILoginRepository
+    {
+        private readonly AppDbContext _appDbContext;
+
+        public LoginRepository(AppDbContext appDbContext)
+        {
+            _appDbContext = appDbContext;
+        }
+
+        public async Task AddAsync(Login newLogin)
+            => await _appDbContext.Logins.AddAsync(newLogin);
+
+        public async Task<Login?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
+            => await _appDbContext.Logins
+                .Where(l => l.Id.Equals(id))
+                .FirstOrDefaultAsync(cancellationToken);
+
+        public async Task<Login?> GetByUserIdAndHashedRefreshTokenAsync(Guid userId, string hashedRefreshToken, CancellationToken cancellationToken = default)
+            => await _appDbContext.Logins
+                .Where(l => l.UserId.Equals(userId) &&
+                    l.RefreshTokenHashed == hashedRefreshToken)
+                .FirstOrDefaultAsync(cancellationToken);
+
+        public async Task<List<Login>> GetAllByUserIdAsync(Guid userId, CancellationToken cancellationToken = default)
+            => await _appDbContext.Logins
+                .Where(l => l.UserId.Equals(userId))
+                .ToListAsync(cancellationToken);
+
+        public async Task<List<Login>> GetAllActiveByUserIdAsync(Guid userId, CancellationToken cancellationToken = default)
+            => await _appDbContext.Logins
+                .Where(l => l.UserId.Equals(userId) &&
+                    l.ExpirationDate > DateTime.UtcNow)
+                .ToListAsync(cancellationToken);
+
+        public void Delete(Login login)
+            => _appDbContext.Logins.Remove(login);
+
+        public void DeleteAll(IEnumerable<Login> logins)
+            => _appDbContext.Logins.RemoveRange(logins);
+
+        public async Task<int> DeleteByIdAndUserIdAsync(Guid id, Guid userId, CancellationToken cancellationToken = default)
+            => await _appDbContext.Logins
+                .Where(l => l.Id.Equals(id) &&
+                    l.UserId.Equals(userId))
+                .ExecuteDeleteAsync(cancellationToken);
+
+        public async Task<int> DeleteAllByUserIdAsync(Guid userId, CancellationToken cancellationToken = default)
+            => await _appDbContext.Logins
+                .Where(l => l.UserId.Equals(userId))
+                .ExecuteDeleteAsync(cancellationToken);
+    }
+}

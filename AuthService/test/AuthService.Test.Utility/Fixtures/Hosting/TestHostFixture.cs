@@ -1,0 +1,119 @@
+﻿using Cayd.AspNetCore.FlexLog.DependencyInjection;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Routing;
+using Microsoft.AspNetCore.TestHost;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using System.Reflection;
+using AuthService.Persistence.DbContexts;
+using AuthService.Persistence.SeedData;
+using AuthService.Test.Utility.Hosting.Endpoints;
+using AuthService.Test.Utility.Hosting.Policies;
+using AuthService.Test.Utility.Hosting.Sinks;
+
+namespace AuthService.Test.Utility.Fixtures.Hosting
+{
+    public partial class TestHostFixture : IAsyncLifetime
+    {
+        public IHost Host { get; private set; } = null!;
+        public HttpClient Client { get; private set; } = null!;
+
+        public IConfiguration Configuration { get; private set; } = null!;
+
+        public AppDbContext AppDbContext { get; private set; } = null!;
+
+        public async Task InitializeAsync()
+        {
+            Configuration = ConfigurationHelper.CreateConfiguration();
+
+            Host = new HostBuilder()
+                .ConfigureWebHost(hostBuilder =>
+                {
+                    hostBuilder.UseTestServer()
+                        .UseConfiguration(Configuration)
+                        .ConfigureServices((context, services) =>
+                        {
+                            services.AddServices(context.Configuration);
+                            services.AddAuthorization(config =>
+                            {
+                                config.AddPolicy(TestPolicy.PolicyName, p =>
+                                {
+                                    p.RequireRole(TestPolicy.RoleName);
+                                });
+                            });
+                            services.AddFlexLog(context.Configuration, config =>
+                            {
+                                config.AddSink(new TestSink());
+                            });
+                        })
+                        .Configure(appBuilder =>
+                        {
+                            appBuilder.UseRouting();
+                            appBuilder.AddMiddlewares();
+                            appBuilder.UseEndpoints(endpoints =>
+                            {
+                                AddAllTestEndpoints(endpoints);
+                                endpoints.MapControllers();
+                            });
+                        });
+                })
+                .Build();
+
+            await Host.StartAsync();
+
+            Client = Host.GetTestClient();
+
+            await CreateDatabase();
+            await SeedData();
+
+            SetDefaultOptions();
+        }
+
+        public async Task DisposeAsync()
+        {
+            await AppDbContext.Database.EnsureDeletedAsync();
+
+            await Host.StopAsync();
+            Host.Dispose();
+            Client.Dispose();
+        }
+
+        public void SetDefaultOptions()
+        {
+            ClearCookies();
+            ResetUserAgent();
+            ResetAcceptLanguage();
+            RemoveJwtBearerToken();
+            EmailHelper.SetEmailSenderResult(true);
+        }
+
+        private void AddAllTestEndpoints(IEndpointRouteBuilder endpoints)
+        {
+            var methods = typeof(TestEndpoints).GetMethods(BindingFlags.Public | BindingFlags.Static);
+            foreach (var method in methods)
+            {
+                method.Invoke(null, new object[] { endpoints });
+            }
+        }
+
+        private async Task CreateDatabase()
+        {
+            AppDbContext = Host.Services.GetRequiredService<AppDbContext>();
+
+            if (await AppDbContext.Database.CanConnectAsync())
+            {
+                await AppDbContext.Database.EnsureCreatedAsync();
+            }
+
+            await AppDbContext.Database.MigrateAsync();
+        }
+
+        private async Task SeedData()
+        {
+            await Host.Services.SeedDataAppDbContext(Configuration);
+        }
+    }
+}

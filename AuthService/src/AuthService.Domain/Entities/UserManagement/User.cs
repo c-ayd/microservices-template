@@ -1,0 +1,20 @@
+﻿using AuthService.Domain.SeedWork;
+
+namespace AuthService.Domain.Entities.UserManagement
+{
+    public class User : EntityBase<Guid>, IUpdateAudit, ISoftDelete
+    {
+        public string? Email { get; set; }
+
+        public DateTime? UpdatedDate { get; private set; }
+
+        public bool IsDeleted { get; private set; }
+        public DateTime? DeletedDate { get; private set; }
+
+        // Relationships
+        public SecurityState? SecurityState { get; set; }
+        public List<Role> Roles { get; set; } = new List<Role>();
+        public List<Login> Logins { get; set; } = new List<Login>();
+        public List<Token> Tokens { get; set; } = new List<Token>();
+    }
+}

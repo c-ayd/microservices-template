@@ -1,0 +1,39 @@
+﻿using AuthService.Domain.Entities.UserManagement;
+using AuthService.Domain.Entities.UserManagement.Enums;
+using AuthService.Domain.SeedWork;
+
+namespace AuthService.Domain.Repositories.UserManagement
+{
+    public interface ITokenRepository : IRepositoryBase
+    {
+        Task AddAsync(Token newToken);
+        Task<Token?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default);
+        Task<Token?> GetByHashedValueAndPurposeAsync(string hashedValue, ETokenPurpose purpose, CancellationToken cancellationToken = default);
+        Task<List<Token>> GetAllByUserIdAsync(Guid userId, CancellationToken cancellationToken = default);
+        Task<List<Token>> GetAllByUserIdAndPurposeAsync(Guid userId, ETokenPurpose purpose, CancellationToken cancellationToken = default);
+        void Delete(Token token);
+        void DeleteAll(IEnumerable<Token> tokens);
+
+        /// <summary>
+        /// Deletes all tokens related to a given user ID from the database.
+        /// <para>
+        /// It skips EF Core's tracking system.
+        /// </para>
+        /// </summary>
+        /// <param name="userId">ID of the user to delete related tokens</param>
+        /// <param name="cancellationToken"></param>
+        /// <returns>Returns the number of affected rows.</returns>
+        Task<int> DeleteAllByUserIdAsync(Guid userId, CancellationToken cancellationToken = default);
+        /// <summary>
+        /// Deletes all tokens related to a given user ID and their purposes from the database.
+        /// <para>
+        /// It skips EF Core's tracking system.
+        /// </para>
+        /// </summary>
+        /// <param name="userId">ID of the user to delete related tokens</param>
+        /// <param name="purpose">Purpose of the tokens that are going to be deleted</param>
+        /// <param name="cancellationToken"></param>
+        /// <returns>Returns the number of affected rows.</returns>
+        Task<int> DeleteAllByUserIdAndPurposeAsync(Guid userId, ETokenPurpose purpose, CancellationToken cancellationToken = default);
+    }
+}
