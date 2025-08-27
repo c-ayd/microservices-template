@@ -5,6 +5,7 @@ using Cayd.AspNetCore.Mediator.Abstractions;
 using AuthService.Application.Abstractions.Crypto;
 using AuthService.Application.Abstractions.UOW;
 using AuthService.Application.Localization;
+using AuthService.Domain.Entities.UserManagement;
 using AuthService.Domain.Entities.UserManagement.Enums;
 
 namespace AuthService.Application.Features.Commands.Authentication.VerifyEmail
@@ -40,8 +41,8 @@ namespace AuthService.Application.Features.Commands.Authentication.VerifyEmail
             }
 
             // Update email verification value of the account
-            var securityState = await _unitOfWork.Users.GetSecurityStateByIdAsync(token.UserId);
-            if (securityState == null)
+            var user = await _unitOfWork.Users.GetByIdWithSecurityStateAsync(token.UserId);
+            if (user == null || user.SecurityState == null)
             {
                 await _unitOfWork.SaveChangesAsync();
 
@@ -49,16 +50,25 @@ namespace AuthService.Application.Features.Commands.Authentication.VerifyEmail
                 return new ExecInternalServerError("Something went wrong", CommonLocalizationKeys.InternalServerError);
             }
 
-            // Check email verification state
-            if (securityState.IsEmailVerified)
+            if (user.NewEmail == null)
             {
-                await _unitOfWork.SaveChangesAsync();
+                // Check email verification state
+                if (user.SecurityState.IsEmailVerified)
+                {
+                    await _unitOfWork.SaveChangesAsync();
 
-                // This code should never be executed. When an email address is verified, the related token should be deleted as well.
-                return new ExecConflict("Email is already verified", AuthenticationLocalizationKeys.EmailAlreadyVerified);
+                    // This code should never be executed. When an email address is verified, the related token should be deleted as well.
+                    return new ExecConflict("Email is already verified", AuthenticationLocalizationKeys.EmailAlreadyVerified);
+                }
+
+                user.SecurityState.IsEmailVerified = true;
             }
-
-            securityState.IsEmailVerified = true;
+            else
+            {
+                user.Email = user.NewEmail;
+                user.NewEmail = null;
+                user.SecurityState.IsEmailVerified = true;
+            }
 
             await _unitOfWork.SaveChangesAsync();
 
