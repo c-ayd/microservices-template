@@ -13,5 +13,6 @@
     <PackageReference Include="Cayd.Uuid" Version="1.0.0" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.0" />
     <PackageReference Include="Npgsql" Version="8.0.6" />
+    <PackageReference Include="RabbitMQ.Client" Version="7.1.2" />
   </ItemGroup>
 </Project>
