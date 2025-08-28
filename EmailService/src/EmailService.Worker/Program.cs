@@ -1,6 +1,9 @@
+using Cayd.AspNetCore.FlexLog.DependencyInjection;
 using Cayd.AspNetCore.Settings.DependencyInjection;
 using EmailService.Worker.Abstractions.Messaging;
+using EmailService.Worker.Logging.Sinks;
 using EmailService.Worker.Services.Messaging;
+using EmailService.Worker.Settings;
 
 var builder = Host.CreateApplicationBuilder(args);
 
@@ -17,5 +20,12 @@ public static partial class Program
         services.AddSettingsFromAssembly(configuration, typeof(Program).Assembly);
 
         services.AddSingleton<IEmailSender, Smtp>();
+
+        services.AddFlexLog(configuration, config =>
+        {
+            var connectionStrings = configuration.GetSection(ConnectionStringsSettings.SettingsKey).Get<ConnectionStringsSettings>()!;
+
+            config.AddSink(new DatabaseSink(connectionStrings.Log));
+        });
     }
 }
