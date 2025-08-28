@@ -1,5 +1,4 @@
-﻿using Cayd.AspNetCore.FlexLog.DependencyInjection;
-using Microsoft.AspNetCore.Builder;
+﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.AspNetCore.TestHost;
@@ -12,7 +11,6 @@ using AuthService.Persistence.DbContexts;
 using AuthService.Persistence.SeedData;
 using AuthService.Test.Utility.Hosting.Endpoints;
 using AuthService.Test.Utility.Hosting.Policies;
-using AuthService.Test.Utility.Hosting.Sinks;
 
 namespace AuthService.Test.Utility.Fixtures.Hosting
 {
@@ -43,10 +41,6 @@ namespace AuthService.Test.Utility.Fixtures.Hosting
                                 {
                                     p.RequireRole(TestPolicy.RoleName);
                                 });
-                            });
-                            services.AddFlexLog(context.Configuration, config =>
-                            {
-                                config.AddSink(new TestSink());
                             });
                         })
                         .Configure(appBuilder =>

@@ -19,13 +19,6 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddServices(builder.Configuration);
 
-builder.Services.AddFlexLog(builder.Configuration, config =>
-{
-    var connStrings = builder.Configuration.GetSection(ConnectionStringsSettings.SettingsKey).Get<ConnectionStringsSettings>()!;
-
-    config.AddSink(new DatabaseSink(connStrings.Log));
-});
-
 builder.Services.ConfigureRateLimiter(builder.Configuration);
 builder.Services.ConfigureDataProtection(builder.Configuration);
 
@@ -68,6 +61,13 @@ public static partial class Program
         services.Configure<ApiBehaviorOptions>(options =>
         {
             options.ConfigureInvalidModelStateResponse();
+        });
+
+        services.AddFlexLog(configuration, config =>
+        {
+            var connStrings = configuration.GetSection(ConnectionStringsSettings.SettingsKey).Get<ConnectionStringsSettings>()!;
+
+            config.AddSink(new DatabaseSink(connStrings.Log));
         });
 
         services.AddPresentationServices();
