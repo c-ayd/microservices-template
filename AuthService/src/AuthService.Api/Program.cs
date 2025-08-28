@@ -72,7 +72,7 @@ public static partial class Program
 
         services.AddPresentationServices();
         services.AddPersistenceServices(configuration);
-        services.AddInfrastructureServices();
+        services.AddInfrastructureServices(configuration);
         services.AddApplicationServices();
 
         services.AddSettingsFromAssemblies(configuration,
