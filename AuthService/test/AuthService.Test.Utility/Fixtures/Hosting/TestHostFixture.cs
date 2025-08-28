@@ -82,6 +82,8 @@ namespace AuthService.Test.Utility.Fixtures.Hosting
             ResetAcceptLanguage();
             RemoveJwtBearerToken();
             EmailHelper.SetEmailSenderResult(true);
+            EmailHelper.SetSendEmailEventResult(true);
+            EmailHelper.SetUseMessageBus(false);
         }
 
         private void AddAllTestEndpoints(IEndpointRouteBuilder endpoints)

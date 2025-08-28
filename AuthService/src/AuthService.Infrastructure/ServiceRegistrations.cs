@@ -5,6 +5,8 @@ using AuthService.Application.Abstractions.Messaging.Templates;
 using AuthService.Infrastructure.Authentication;
 using AuthService.Infrastructure.Crypto;
 using AuthService.Infrastructure.Messaging.Templates;
+using AuthService.Application.Abstractions.MessageBus.Publisher.Email;
+using AuthService.Infrastructure.MessageBus.Publisher.Email;
 using AuthService.Infrastructure.MessageBus;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
@@ -28,6 +30,8 @@ namespace AuthService.Infrastructure
                 var loggerFactory = sp.GetRequiredService<ILoggerFactory>();
                 return new RabbitMqConnection(configuration.GetConnectionString("RabbitMq")!, loggerFactory);
             });
+
+            services.AddSingleton<IEmailEventsPublisher, EmailEventsPublisher>();
         }
     }
 }

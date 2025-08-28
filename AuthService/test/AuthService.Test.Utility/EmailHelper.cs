@@ -91,6 +91,16 @@ namespace AuthService.Test.Utility
             AppDomain.CurrentDomain.SetData("EmailSenderResult", success);
         }
 
+        public static void SetSendEmailEventResult(bool success)
+        {
+            AppDomain.CurrentDomain.SetData("SendEmailEventResult", success);
+        }
+
+        public static void SetUseMessageBus(bool useMessageBus)
+        {
+            AppDomain.CurrentDomain.SetData("UseMessageBus", useMessageBus);
+        }
+
         public class EmailContent
         {
             public string? SenderEmail { get; set; }
