@@ -12,6 +12,8 @@ builder.Services.AddServices(builder.Configuration);
 
 var host = builder.Build();
 
+await host.StartMessageBus();
+
 host.Run();
 
 public static partial class Program
