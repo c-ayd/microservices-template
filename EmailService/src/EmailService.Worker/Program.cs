@@ -1,6 +1,7 @@
 using Cayd.AspNetCore.FlexLog.DependencyInjection;
 using Cayd.AspNetCore.Settings.DependencyInjection;
 using EmailService.Worker.Abstractions.Messaging;
+using EmailService.Worker.Configurations;
 using EmailService.Worker.Logging.Sinks;
 using EmailService.Worker.Services.Messaging;
 using EmailService.Worker.Settings;
@@ -27,5 +28,7 @@ public static partial class Program
 
             config.AddSink(new DatabaseSink(connectionStrings.Log));
         });
+
+        services.AddMessageBus(configuration);
     }
 }

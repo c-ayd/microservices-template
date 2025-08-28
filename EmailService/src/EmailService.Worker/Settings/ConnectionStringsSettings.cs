@@ -6,6 +6,7 @@ namespace EmailService.Worker.Settings
     {
         public static string SettingsKey => "ConnectionStrings";
 
+        public required string RabbitMq { get; set; }
         public required string Log { get; set; }
     }
 }
