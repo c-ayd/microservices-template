@@ -93,7 +93,8 @@ namespace AuthService.Test.Integration.Api.Controllers.Authentication
                     requireNonAlphanumeric: false)
             };
 
-            EmailHelper.SetEmailSenderResult(false);
+            EmailHelper.SetUseMessageBus(false);
+            EmailHelper.SetSendEmailEventResult(false);
 
             // Act
             var result = await _testHostFixture.Client.PostAsJsonAsync(_registerEndpoint, request);
@@ -144,10 +145,6 @@ namespace AuthService.Test.Integration.Api.Controllers.Authentication
                 .FirstOrDefaultAsync();
             Assert.NotNull(token);
             Assert.Equal(ETokenPurpose.EmailVerification, token.Purpose);
-
-            var email = await EmailHelper.GetLatestTempEmailFileAsync();
-            Assert.NotNull(email);
-            Assert.Equal(request.Email, email.ReceiverEmail);
         }
     }
 }

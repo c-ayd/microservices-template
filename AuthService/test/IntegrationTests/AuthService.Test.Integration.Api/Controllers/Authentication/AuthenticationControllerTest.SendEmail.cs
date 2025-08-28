@@ -51,7 +51,7 @@ namespace AuthService.Test.Integration.Api.Controllers.Authentication
         }
 
         [Fact]
-        public async Task SendEmail_WhenEmailDoesNotExist_ShouldReturnOkAndNotSendEmail()
+        public async Task SendEmail_WhenEmailDoesNotExist_ShouldReturnOk()
         {
             // Arrange
             var email = EmailGenerator.Generate();
@@ -66,12 +66,6 @@ namespace AuthService.Test.Integration.Api.Controllers.Authentication
 
             // Assert
             Assert.Equal(HttpStatusCode.OK, result.StatusCode);
-
-            var lastSentEmail = await EmailHelper.GetLatestTempEmailFileAsync();
-            if (lastSentEmail != null)
-            {
-                Assert.NotEqual(email, lastSentEmail.ReceiverEmail);
-            }
         }
 
         [Fact]
@@ -127,7 +121,8 @@ namespace AuthService.Test.Integration.Api.Controllers.Authentication
                 Purpose = ETokenPurpose.EmailVerification
             };
 
-            EmailHelper.SetEmailSenderResult(false);
+            EmailHelper.SetUseMessageBus(false);
+            EmailHelper.SetSendEmailEventResult(false);
 
             // Act
             var result = await _testHostFixture.Client.PostAsJsonAsync(_sendEmailEndpoint, request);
@@ -190,10 +185,6 @@ namespace AuthService.Test.Integration.Api.Controllers.Authentication
 
             // Assert
             Assert.Equal(HttpStatusCode.OK, result.StatusCode);
-
-            var sentEmail = await EmailHelper.GetLatestTempEmailFileAsync();
-            Assert.NotNull(sentEmail);
-            Assert.Equal(email, sentEmail.ReceiverEmail);
 
             var tokens = await _testHostFixture.AppDbContext.Tokens
                 .Where(t => t.UserId.Equals(userId))

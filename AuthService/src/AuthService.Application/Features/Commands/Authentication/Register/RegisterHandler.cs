@@ -5,13 +5,14 @@ using Cayd.AspNetCore.FlexLog;
 using Cayd.AspNetCore.Mediator.Abstractions;
 using Microsoft.Extensions.Options;
 using AuthService.Application.Abstractions.Crypto;
-using AuthService.Application.Abstractions.Messaging;
 using AuthService.Application.Abstractions.Messaging.Templates;
 using AuthService.Application.Abstractions.UOW;
 using AuthService.Application.Localization;
 using AuthService.Application.Settings;
 using AuthService.Domain.Entities.UserManagement;
 using AuthService.Domain.Entities.UserManagement.Enums;
+using AuthService.Application.Abstractions.MessageBus.Publisher.Email;
+using AuthService.Application.Dtos.MessageBus.Publisher.Email;
 
 namespace AuthService.Application.Features.Commands.Authentication.Register
 {
@@ -22,7 +23,7 @@ namespace AuthService.Application.Features.Commands.Authentication.Register
         private readonly ITokenGenerator _tokenGenerator;
         private readonly TokenLifetimesSettings _tokenLifetimesSettings;
         private readonly IEmailTemplates _emailTemplates;
-        private readonly IEmailSender _emailSender;
+        private readonly IEmailEventsPublisher _emailEventsPublisher;
         private readonly IFlexLogger<RegisterHandler> _flexLogger;
 
         public RegisterHandler(IUnitOfWork unitOfWork,
@@ -30,7 +31,7 @@ namespace AuthService.Application.Features.Commands.Authentication.Register
             ITokenGenerator tokenGenerator,
             IOptions<TokenLifetimesSettings> tokenLifetimesSettings,
             IEmailTemplates emailTemplates,
-            IEmailSender emailSender,
+            IEmailEventsPublisher emailEventsPublisher,
             IFlexLogger<RegisterHandler> flexLogger)
         {
             _unitOfWork = unitOfWork;
@@ -38,7 +39,7 @@ namespace AuthService.Application.Features.Commands.Authentication.Register
             _tokenGenerator = tokenGenerator;
             _tokenLifetimesSettings = tokenLifetimesSettings.Value;
             _emailTemplates = emailTemplates;
-            _emailSender = emailSender;
+            _emailEventsPublisher = emailEventsPublisher;
             _flexLogger = flexLogger;
         }
 
@@ -79,7 +80,14 @@ namespace AuthService.Application.Features.Commands.Authentication.Register
             var emailTemplate = _emailTemplates.GetEmailVerificationTemplate(emailVerificationTokenValue, emailVerificationExpirationTimeInHours);
             try
             {
-                await _emailSender.SendAsync(request.Email!, emailTemplate.Subject!, emailTemplate.Body!, isBodyHtml: false); // NOTE: If the expected template is HTML, switch it to 'true'
+                await _emailEventsPublisher.PublishSendEmailAsync(new SendEmailDto()
+                {
+                    CorrelationId = _flexLogger.LogContext.CorrelationId,
+                    To = request.Email!,
+                    Subject = emailTemplate.Subject!,
+                    Body = emailTemplate.Body!,
+                    IsBodyHtml = false  // NOTE: If the expected template is HTML, switch it to 'true'
+                });
             }
             catch (Exception exception)
             {

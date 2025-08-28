@@ -81,7 +81,6 @@ namespace AuthService.Test.Utility.Fixtures.Hosting
             ResetUserAgent();
             ResetAcceptLanguage();
             RemoveJwtBearerToken();
-            EmailHelper.SetEmailSenderResult(true);
             EmailHelper.SetSendEmailEventResult(true);
             EmailHelper.SetUseMessageBus(false);
         }

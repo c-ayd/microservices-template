@@ -342,7 +342,8 @@ namespace AuthService.Test.Integration.Api.Controllers.Authentication
             _testHostFixture.AppDbContext.UntrackEntities(user.Tokens.ToArray());
             _testHostFixture.AppDbContext.UntrackEntity(user);
 
-            EmailHelper.SetEmailSenderResult(false);
+            EmailHelper.SetUseMessageBus(false);
+            EmailHelper.SetSendEmailEventResult(false);
 
             // Act
             var result = await _testHostFixture.Client.PostAsJsonAsync(_updateEmailEndpoint, request);
@@ -444,10 +445,6 @@ namespace AuthService.Test.Integration.Api.Controllers.Authentication
                 .Where(t => t.UserId.Equals(userId) && t.Purpose == ETokenPurpose.EmailVerification)
                 .ToListAsync();
             Assert.Single(tokens);
-
-            var sentEmail = await EmailHelper.GetLatestTempEmailFileAsync();
-            Assert.NotNull(sentEmail);
-            Assert.Equal(newEmail.ToLower(), sentEmail.ReceiverEmail);
         }
     }
 }

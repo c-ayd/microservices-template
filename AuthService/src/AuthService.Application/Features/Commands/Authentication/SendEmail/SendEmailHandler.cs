@@ -5,7 +5,6 @@ using Cayd.AspNetCore.FlexLog;
 using Cayd.AspNetCore.Mediator.Abstractions;
 using Microsoft.Extensions.Options;
 using AuthService.Application.Abstractions.Crypto;
-using AuthService.Application.Abstractions.Messaging;
 using AuthService.Application.Abstractions.Messaging.Templates;
 using AuthService.Application.Abstractions.UOW;
 using AuthService.Application.Dtos.Messaging.Templates;
@@ -13,6 +12,8 @@ using AuthService.Application.Localization;
 using AuthService.Application.Settings;
 using AuthService.Domain.Entities.UserManagement;
 using AuthService.Domain.Entities.UserManagement.Enums;
+using AuthService.Application.Abstractions.MessageBus.Publisher.Email;
+using AuthService.Application.Dtos.MessageBus.Publisher.Email;
 
 namespace AuthService.Application.Features.Commands.Authentication.SendEmail
 {
@@ -23,7 +24,7 @@ namespace AuthService.Application.Features.Commands.Authentication.SendEmail
         private readonly TokenLifetimesSettings _tokenLifetimesSettings;
         private readonly IHashing _hashing;
         private readonly IEmailTemplates _emailTemplates;
-        private readonly IEmailSender _emailSender;
+        private readonly IEmailEventsPublisher _emailEventsPublisher;
         private readonly IFlexLogger<SendEmailHandler> _flexLogger;
 
         public SendEmailHandler(IUnitOfWork unitOfWork,
@@ -31,7 +32,7 @@ namespace AuthService.Application.Features.Commands.Authentication.SendEmail
             IOptions<TokenLifetimesSettings> tokenLifetimesSettings,
             IHashing hashing,
             IEmailTemplates emailTemplates,
-            IEmailSender emailSender,
+            IEmailEventsPublisher emailEventsPublisher,
             IFlexLogger<SendEmailHandler> flexLogger)
         {
             _unitOfWork = unitOfWork;
@@ -39,7 +40,7 @@ namespace AuthService.Application.Features.Commands.Authentication.SendEmail
             _tokenLifetimesSettings = tokenLifetimesSettings.Value;
             _hashing = hashing;
             _emailTemplates = emailTemplates;
-            _emailSender = emailSender;
+            _emailEventsPublisher = emailEventsPublisher;
             _flexLogger = flexLogger;
         }
 
@@ -98,7 +99,14 @@ namespace AuthService.Application.Features.Commands.Authentication.SendEmail
                 await _unitOfWork.SaveChangesAsync();
 
                 // Sending email
-                await _emailSender.SendAsync(request.Email!, emailTemplate.Subject!, emailTemplate.Body!, isBodyHtml: false); // NOTE: If the expected template is HTML, switch it to 'true'
+                await _emailEventsPublisher.PublishSendEmailAsync(new SendEmailDto()
+                {
+                    CorrelationId = _flexLogger.LogContext.CorrelationId,
+                    To = request.Email!,
+                    Subject = emailTemplate.Subject!,
+                    Body = emailTemplate.Body!,
+                    IsBodyHtml = false  // NOTE: If the expected template is HTML, switch it to 'true'
+                });
 
                 await transaction.CommitAsync();
             }

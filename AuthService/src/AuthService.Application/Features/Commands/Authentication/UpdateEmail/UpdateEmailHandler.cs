@@ -14,6 +14,8 @@ using AuthService.Domain.Entities.UserManagement;
 using AuthService.Application.Abstractions.Messaging.Templates;
 using AuthService.Application.Abstractions.Messaging;
 using Cayd.AspNetCore.Mediator.Abstractions;
+using AuthService.Application.Abstractions.MessageBus.Publisher.Email;
+using AuthService.Application.Dtos.MessageBus.Publisher.Email;
 
 namespace AuthService.Application.Features.Commands.Authentication.UpdateEmail
 {
@@ -24,7 +26,7 @@ namespace AuthService.Application.Features.Commands.Authentication.UpdateEmail
         private readonly IHashing _hashing;
         private readonly ITokenGenerator _tokenGenerator;
         private readonly IEmailTemplates _emailTemplates;
-        private readonly IEmailSender _emailSender;
+        private readonly IEmailEventsPublisher _emailEventsPublisher;
         private readonly AccountLockSettings _accountLockSettings;
         private readonly TokenLifetimesSettings _tokenLifetimesSettings;
         private readonly IFlexLogger<UpdateEmailHandler> _flexLogger;
@@ -34,7 +36,7 @@ namespace AuthService.Application.Features.Commands.Authentication.UpdateEmail
             IHashing hashing,
             ITokenGenerator tokenGenerator,
             IEmailTemplates emailTemplates,
-            IEmailSender emailSender,
+            IEmailEventsPublisher emailEventsPublisher,
             IOptions<AccountLockSettings> accountLockSettings,
             IOptions<TokenLifetimesSettings> tokenLifetimesSettings,
             IFlexLogger<UpdateEmailHandler> flexLogger)
@@ -44,7 +46,7 @@ namespace AuthService.Application.Features.Commands.Authentication.UpdateEmail
             _hashing = hashing;
             _tokenGenerator = tokenGenerator;
             _emailTemplates = emailTemplates;
-            _emailSender = emailSender;
+            _emailEventsPublisher = emailEventsPublisher;
             _accountLockSettings = accountLockSettings.Value;
             _tokenLifetimesSettings = tokenLifetimesSettings.Value;
             _flexLogger = flexLogger;
@@ -148,7 +150,15 @@ namespace AuthService.Application.Features.Commands.Authentication.UpdateEmail
 
                 // Send a verification email
                 var emailTemplate = _emailTemplates.GetEmailVerificationTemplate(emailVerificationTokenValue, emailVerificationExpirationTimeInHours);
-                await _emailSender.SendAsync(request.NewEmail!.ToLower(), emailTemplate.Subject!, emailTemplate.Body!, isBodyHtml: false); // NOTE: If the expected template is HTML, switch it to 'true'
+
+                await _emailEventsPublisher.PublishSendEmailAsync(new SendEmailDto()
+                {
+                    CorrelationId = _flexLogger.LogContext.CorrelationId,
+                    To = request.NewEmail!.ToLower(),
+                    Subject = emailTemplate.Subject!,
+                    Body = emailTemplate.Body!,
+                    IsBodyHtml = false  // NOTE: If the expected template is HTML, switch it to 'true'
+                });
 
                 await transaction.CommitAsync();
             }
