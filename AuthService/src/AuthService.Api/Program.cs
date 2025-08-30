@@ -13,7 +13,7 @@ using AuthService.Application.Policies;
 using AuthService.Infrastructure;
 using AuthService.Persistence;
 using AuthService.Persistence.SeedData;
-using AuthService.Persistence.Settings;
+using AuthService.Application.Settings;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -65,9 +65,9 @@ public static partial class Program
 
         services.AddFlexLog(configuration, config =>
         {
-            var connStrings = configuration.GetSection(ConnectionStringsSettings.SettingsKey).Get<ConnectionStringsSettings>()!;
+            var connectionStrings = configuration.GetSection(ConnectionStringsSettings.SettingsKey).Get<ConnectionStringsSettings>()!;
 
-            config.AddSink(new DatabaseSink(connStrings.Log));
+            config.AddSink(new DatabaseSink(connectionStrings.Log));
         });
 
         services.AddPresentationServices();

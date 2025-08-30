@@ -10,6 +10,7 @@ using AuthService.Infrastructure.MessageBus.Publisher.Email;
 using AuthService.Infrastructure.MessageBus;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using AuthService.Application.Settings;
 
 namespace AuthService.Infrastructure
 {
@@ -27,8 +28,10 @@ namespace AuthService.Infrastructure
 
             services.AddSingleton(sp =>
             {
+                var connectionStrings = configuration.GetSection(ConnectionStringsSettings.SettingsKey).Get<ConnectionStringsSettings>()!;
                 var loggerFactory = sp.GetRequiredService<ILoggerFactory>();
-                return new RabbitMqConnection(configuration.GetConnectionString("RabbitMq")!, loggerFactory);
+
+                return new RabbitMqConnection(connectionStrings.RabbitMq, loggerFactory);
             });
 
             services.AddSingleton<IEmailEventsPublisher, EmailEventsPublisher>();
