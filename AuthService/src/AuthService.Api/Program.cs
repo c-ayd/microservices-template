@@ -70,7 +70,7 @@ public static partial class Program
             config.AddSink(new DatabaseSink(connectionStrings.Log));
         });
 
-        services.AddPresentationServices();
+        services.AddApiServices();
         services.AddPersistenceServices(configuration);
         services.AddInfrastructureServices(configuration);
         services.AddApplicationServices();
