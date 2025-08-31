@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using AuthService.Persistence.DbContexts;
-using AuthService.Persistence.Settings;
+using AuthService.Application.Settings;
 
 namespace AuthService.Test.Utility.Fixtures.DbContexts
 {

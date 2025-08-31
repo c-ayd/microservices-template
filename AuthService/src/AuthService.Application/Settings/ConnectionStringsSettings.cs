@@ -1,6 +1,6 @@
 ﻿using Cayd.AspNetCore.Settings;
 
-namespace AuthService.Persistence.Settings
+namespace AuthService.Application.Settings
 {
     public class ConnectionStringsSettings : ISettings
     {

@@ -3,8 +3,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using AuthService.Application.Abstractions.UOW;
 using AuthService.Persistence.DbContexts;
-using AuthService.Persistence.Settings;
 using AuthService.Persistence.UOW;
+using AuthService.Application.Settings;
 
 namespace AuthService.Persistence
 {
