@@ -1,0 +1,64 @@
+syntax = "proto3";
+
+option csharp_namespace = "AuthService.Infrastructure.Grpc.Server.Services";
+
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/empty.proto";
+import "google/protobuf/wrappers.proto";
+
+service AdminGrpcService {
+	rpc GetUsers (GetUsersGrpcRequest) returns (GetUsersGrpcResponse);
+    rpc GetUser (GetUserGrpcRequest) returns (GetUserGrpcResponse);
+    rpc DeleteUser (DeleteUserGrpcRequest) returns (google.protobuf.Empty);
+}
+
+message GetUsersGrpcRequest {
+	int32 page = 1;
+	int32 pageSize = 2;
+}
+message GetUsersGrpcResponse {
+	repeated UserModel users = 1;
+    int32 numberOfNextPages = 2;
+}
+
+message GetUserGrpcRequest {
+    string id = 1;
+}
+message GetUserGrpcResponse {
+    UserModel user = 1;
+    optional SecurityStateModel SecurityState = 2;
+    repeated RoleModel roles = 3;
+    repeated LoginModel logins = 4;
+}
+
+message DeleteUserGrpcRequest {
+    string id = 1;
+}
+
+//~ Begin - Models
+message UserModel {
+    string id = 1;
+    google.protobuf.Timestamp createdDate = 2;
+    google.protobuf.StringValue email = 3;
+    optional google.protobuf.Timestamp updatedDate = 4;
+    bool isDeleted = 5;
+    optional google.protobuf.Timestamp deletedDate = 6;
+}
+
+message SecurityStateModel {
+    bool isEmailVerified = 1;
+    int32 failedAttemps = 2;
+    bool isLocked = 3;
+    optional google.protobuf.Timestamp unlockDate = 4;
+}
+
+message RoleModel {
+    string name = 1;
+}
+
+message LoginModel {
+    google.protobuf.StringValue ipAddress = 1;
+    google.protobuf.StringValue deviceInfo = 2;
+    optional google.protobuf.Timestamp updatedDate = 3;
+}
+//~ End
