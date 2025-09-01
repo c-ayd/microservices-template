@@ -5,6 +5,8 @@ using System.Security.Claims;
 using AuthService.Api.Utilities;
 using AuthService.Domain.Entities.UserManagement;
 using AuthService.Test.Utility.Extensions.EFCore;
+using Microsoft.Net.Http.Headers;
+using System.Globalization;
 
 namespace AuthService.Test.Integration.Api.Controllers.Authentication
 {
@@ -141,6 +143,21 @@ namespace AuthService.Test.Integration.Api.Controllers.Authentication
                 .ToListAsync();
             Assert.Single(logins);
             Assert.False(_hashing.CompareSha256(logins[0].RefreshTokenHashed, token1.RefreshToken), "The login is not deleted.");
+
+            Assert.True(result.Headers.Contains(HeaderNames.SetCookie));
+
+            var cookies = result.Headers.GetValues(HeaderNames.SetCookie);
+            Assert.Single(cookies);
+
+            var cookieDictionary = cookies.ElementAt(0)
+                .Split(';')
+                .Select(s => s.Split('='))
+                .ToDictionary(kvp => kvp[0].Trim(), kvp => kvp.Length > 1 ? kvp[1].Trim() : null);
+            Assert.NotNull(cookieDictionary[CookieUtility.RefreshTokenKey]);
+            Assert.NotNull(cookieDictionary["expires"]);
+
+            var cookieExpirationDate = DateTime.ParseExact(cookieDictionary["expires"]!, "ddd, dd MMM yyyy HH:mm:ss 'GMT'", CultureInfo.InvariantCulture);
+            Assert.True(DateTime.UtcNow > cookieExpirationDate, "The cookie's expiration date is not the in past.");
         }
 
         [Fact]
@@ -214,6 +231,21 @@ namespace AuthService.Test.Integration.Api.Controllers.Authentication
                 .ToListAsync();
             Assert.Single(logins);
             Assert.False(_hashing.CompareSha256(logins[0].RefreshTokenHashed, token1.RefreshToken), "The login is not deleted.");
+
+            Assert.True(result.Headers.Contains(HeaderNames.SetCookie));
+
+            var cookies = result.Headers.GetValues(HeaderNames.SetCookie);
+            Assert.Single(cookies);
+
+            var cookieDictionary = cookies.ElementAt(0)
+                .Split(';')
+                .Select(s => s.Split('='))
+                .ToDictionary(kvp => kvp[0].Trim(), kvp => kvp.Length > 1 ? kvp[1].Trim() : null);
+            Assert.NotNull(cookieDictionary[CookieUtility.RefreshTokenKey]);
+            Assert.NotNull(cookieDictionary["expires"]);
+
+            var cookieExpirationDate = DateTime.ParseExact(cookieDictionary["expires"]!, "ddd, dd MMM yyyy HH:mm:ss 'GMT'", CultureInfo.InvariantCulture);
+            Assert.True(DateTime.UtcNow > cookieExpirationDate, "The cookie's expiration date is not the in past.");
         }
 
         [Fact]
@@ -286,6 +318,21 @@ namespace AuthService.Test.Integration.Api.Controllers.Authentication
                 .Where(l => l.UserId.Equals(user.Id))
                 .ToListAsync();
             Assert.Empty(logins);
+
+            Assert.True(result.Headers.Contains(HeaderNames.SetCookie));
+
+            var cookies = result.Headers.GetValues(HeaderNames.SetCookie);
+            Assert.Single(cookies);
+
+            var cookieDictionary = cookies.ElementAt(0)
+                .Split(';')
+                .Select(s => s.Split('='))
+                .ToDictionary(kvp => kvp[0].Trim(), kvp => kvp.Length > 1 ? kvp[1].Trim() : null);
+            Assert.NotNull(cookieDictionary[CookieUtility.RefreshTokenKey]);
+            Assert.NotNull(cookieDictionary["expires"]);
+
+            var cookieExpirationDate = DateTime.ParseExact(cookieDictionary["expires"]!, "ddd, dd MMM yyyy HH:mm:ss 'GMT'", CultureInfo.InvariantCulture);
+            Assert.True(DateTime.UtcNow > cookieExpirationDate, "The cookie's expiration date is not the in past.");
         }
     }
 }
