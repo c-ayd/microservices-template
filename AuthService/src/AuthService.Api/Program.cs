@@ -14,6 +14,7 @@ using AuthService.Infrastructure;
 using AuthService.Persistence;
 using AuthService.Persistence.SeedData;
 using AuthService.Application.Settings;
+using AuthService.Infrastructure.Grpc.Server.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -31,6 +32,7 @@ app.AddMiddlewares();
 app.UseRateLimiter();
 
 app.MapControllers();
+app.MapGrpcService<AdminGrpcServerService>();
 
 app.Run();
 

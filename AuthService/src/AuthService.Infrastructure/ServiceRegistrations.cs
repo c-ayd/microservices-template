@@ -11,6 +11,7 @@ using AuthService.Infrastructure.MessageBus;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using AuthService.Application.Settings;
+using AuthService.Infrastructure.Grpc.Server.Interceptors;
 
 namespace AuthService.Infrastructure
 {
@@ -35,6 +36,11 @@ namespace AuthService.Infrastructure
             });
 
             services.AddSingleton<IEmailEventsPublisher, EmailEventsPublisher>();
+
+            services.AddGrpc(config =>
+            {
+                config.Interceptors.Add<LoggingInterceptor>();
+            });
         }
     }
 }
