@@ -85,5 +85,7 @@ public static partial class Program
 
         app.UseAuthentication();
         app.UseAuthorization();
+
+        app.UseMiddleware<RequestContextPopulator>();
     }
 }
