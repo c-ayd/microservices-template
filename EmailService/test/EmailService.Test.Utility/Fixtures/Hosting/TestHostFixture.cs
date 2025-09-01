@@ -44,5 +44,10 @@ namespace EmailService.Test.Utility.Fixtures.Hosting
             Host.Dispose();
             Client.Dispose();
         }
+
+        public void SetDefaultOptions()
+        {
+            EmailHelper.SetEmailSenderResult(true);
+        }
     }
 }
