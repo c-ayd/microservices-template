@@ -1,6 +1,7 @@
 ﻿using EmailService.Worker.Abstractions.Messaging;
 using EmailService.Worker.Settings;
 using Microsoft.Extensions.Options;
+using System.Net;
 using System.Net.Mail;
 
 namespace EmailService.Worker.Services.Messaging
