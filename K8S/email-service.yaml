@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: email-service-depl
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: email-service
+  template:
+    metadata:
+      labels:
+        app: email-service
+    spec:
+      containers: 
+        - name: email-service
+          image: email-service:latest
+          imagePullPolicy: IfNotPresent             # NOTE: This is used to get images from the local computer
+          ports:
+            - containerPort: 6080                   # NOTE: Change the port depending on your need. Make sure you also change the targetPort in the cluster IP
+          envFrom:
+            - secretRef:
+                name: secrets
+          env:
+            - name: ASPNETCORE_ENVIRONMENT
+              value: "Production"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: email-service-clusterip-srv
+spec:
+  type: ClusterIP
+  selector:
+    app: email-service
+  ports:
+    - name: email-service
+      protocol: TCP
+      port: 6080                # NOTE: Change the ports depending on your need
+      targetPort: 6080
