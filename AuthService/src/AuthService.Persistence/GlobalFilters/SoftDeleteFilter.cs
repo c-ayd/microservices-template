@@ -5,7 +5,7 @@ using AuthService.Domain.SeedWork;
 
 namespace AuthService.Persistence.GlobalFilters
 {
-    public static partial class AppDbContextFilters
+    public static partial class AuthDbContextFilters
     {
         public static void ApplySoftDeleteFilter(this ModelBuilder modelBuilder)
         {

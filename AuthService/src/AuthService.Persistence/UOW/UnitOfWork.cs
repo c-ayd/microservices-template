@@ -8,46 +8,46 @@ namespace AuthService.Persistence.UOW
 {
     public class UnitOfWork : IUnitOfWork
     {
-        private readonly AppDbContext _appDbContext;
+        private readonly AuthDbContext _authDbContext;
 
-        public UnitOfWork(AppDbContext appDbContext)
+        public UnitOfWork(AuthDbContext authDbContext)
         {
-            _appDbContext = appDbContext;
+            _authDbContext = authDbContext;
         }
 
         public Task<IDbContextTransaction> BeginTransactionAsync(CancellationToken cancellationToken = default)
-            => _appDbContext.Database.BeginTransactionAsync(cancellationToken);
+            => _authDbContext.Database.BeginTransactionAsync(cancellationToken);
 
         public Task CommitTransactionAsync(CancellationToken cancellationToken = default)
-            => _appDbContext.Database.CommitTransactionAsync(cancellationToken);
+            => _authDbContext.Database.CommitTransactionAsync(cancellationToken);
 
         public Task RollbackTransactionAsync(CancellationToken cancellationToken = default)
-            => _appDbContext.Database.RollbackTransactionAsync(cancellationToken);
+            => _authDbContext.Database.RollbackTransactionAsync(cancellationToken);
 
         public async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
-            => await _appDbContext.SaveChangesAsync(cancellationToken);
+            => await _authDbContext.SaveChangesAsync(cancellationToken);
 
-        private TInterface GetRepository<TInterface, TImplementation>(TInterface? repository, Func<AppDbContext, TImplementation> ctor)
+        private TInterface GetRepository<TInterface, TImplementation>(TInterface? repository, Func<AuthDbContext, TImplementation> ctor)
             where TImplementation : TInterface
         {
             if (repository == null)
             {
-                repository = ctor(_appDbContext);
+                repository = ctor(_authDbContext);
             }
 
             return repository;
         }
 
         private IUserRepository? users = null;
-        public IUserRepository Users => GetRepository(users, (appDbContext) => new UserRepository(appDbContext));
+        public IUserRepository Users => GetRepository(users, (authDbContext) => new UserRepository(authDbContext));
 
         private IRoleRepository? roles = null;
-        public IRoleRepository Roles => GetRepository(roles, (appDbContext) => new RoleRepository(appDbContext));
+        public IRoleRepository Roles => GetRepository(roles, (authDbContext) => new RoleRepository(authDbContext));
 
         private ILoginRepository? logins = null;
-        public ILoginRepository Logins => GetRepository(logins, (appDbContext) => new LoginRepository(appDbContext));
+        public ILoginRepository Logins => GetRepository(logins, (authDbContext) => new LoginRepository(authDbContext));
 
         private ITokenRepository? tokens = null;
-        public ITokenRepository Tokens => GetRepository(tokens, (appDbContext) => new TokenRepository(appDbContext));
+        public ITokenRepository Tokens => GetRepository(tokens, (authDbContext) => new TokenRepository(authDbContext));
     }
 }

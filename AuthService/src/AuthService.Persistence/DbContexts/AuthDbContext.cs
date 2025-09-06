@@ -6,7 +6,7 @@ using AuthService.Persistence.Interceptors;
 
 namespace AuthService.Persistence.DbContexts
 {
-    public class AppDbContext : DbContext
+    public class AuthDbContext : DbContext
     {
         // User management
         public DbSet<User> Users { get; set; }
@@ -15,7 +15,7 @@ namespace AuthService.Persistence.DbContexts
         public DbSet<Login> Logins { get; set; }
         public DbSet<Token> Tokens { get; set; }
 
-        public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
+        public AuthDbContext(DbContextOptions<AuthDbContext> options) : base(options)
         {
         }
 

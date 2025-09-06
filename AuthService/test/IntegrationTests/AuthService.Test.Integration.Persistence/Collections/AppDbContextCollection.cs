@@ -2,8 +2,8 @@
 
 namespace AuthService.Test.Integration.Persistence.Collections
 {
-    [CollectionDefinition(nameof(AppDbContextCollection))]
-    public class AppDbContextCollection : ICollectionFixture<AppDbContextFixture>
+    [CollectionDefinition(nameof(AuthDbContextCollection))]
+    public class AuthDbContextCollection : ICollectionFixture<AuthDbContextFixture>
     {
     }
 }

@@ -45,8 +45,8 @@ namespace AuthService.Test.Integration.Api.Controllers.Authentication
                 }
             };
 
-            await _testHostFixture.AppDbContext.Users.AddAsync(user);
-            await _testHostFixture.AppDbContext.SaveChangesAsync();
+            await _testHostFixture.AuthDbContext.Users.AddAsync(user);
+            await _testHostFixture.AuthDbContext.SaveChangesAsync();
 
             var token = _jwt.GenerateJwtToken(new List<Claim>()
             {
@@ -60,8 +60,8 @@ namespace AuthService.Test.Integration.Api.Controllers.Authentication
                 UserId = user.Id
             };
 
-            await _testHostFixture.AppDbContext.Logins.AddAsync(login);
-            await _testHostFixture.AppDbContext.SaveChangesAsync();
+            await _testHostFixture.AuthDbContext.Logins.AddAsync(login);
+            await _testHostFixture.AuthDbContext.SaveChangesAsync();
 
             _testHostFixture.AddJwtBearerToken(token.AccessToken);
 
@@ -93,8 +93,8 @@ namespace AuthService.Test.Integration.Api.Controllers.Authentication
                 }
             };
 
-            await _testHostFixture.AppDbContext.Users.AddAsync(user);
-            await _testHostFixture.AppDbContext.SaveChangesAsync();
+            await _testHostFixture.AuthDbContext.Users.AddAsync(user);
+            await _testHostFixture.AuthDbContext.SaveChangesAsync();
 
             var token1 = _jwt.GenerateJwtToken(new List<Claim>()
             {
@@ -118,12 +118,12 @@ namespace AuthService.Test.Integration.Api.Controllers.Authentication
                 UserId = user.Id
             };
 
-            await _testHostFixture.AppDbContext.Logins.AddAsync(login1);
-            await _testHostFixture.AppDbContext.Logins.AddAsync(login2);
-            await _testHostFixture.AppDbContext.SaveChangesAsync();
+            await _testHostFixture.AuthDbContext.Logins.AddAsync(login1);
+            await _testHostFixture.AuthDbContext.Logins.AddAsync(login2);
+            await _testHostFixture.AuthDbContext.SaveChangesAsync();
 
-            _testHostFixture.AppDbContext.UntrackEntity(login1);
-            _testHostFixture.AppDbContext.UntrackEntity(login2);
+            _testHostFixture.AuthDbContext.UntrackEntity(login1);
+            _testHostFixture.AuthDbContext.UntrackEntity(login2);
 
             var token = _jwt.GenerateJwtToken(new List<Claim>()
             {
@@ -138,7 +138,7 @@ namespace AuthService.Test.Integration.Api.Controllers.Authentication
             // Assert
             Assert.Equal(HttpStatusCode.OK, result.StatusCode);
 
-            var logins = await _testHostFixture.AppDbContext.Logins
+            var logins = await _testHostFixture.AuthDbContext.Logins
                 .Where(l => l.UserId.Equals(user.Id))
                 .ToListAsync();
             Assert.Single(logins);
@@ -181,8 +181,8 @@ namespace AuthService.Test.Integration.Api.Controllers.Authentication
                 }
             };
 
-            await _testHostFixture.AppDbContext.Users.AddAsync(user);
-            await _testHostFixture.AppDbContext.SaveChangesAsync();
+            await _testHostFixture.AuthDbContext.Users.AddAsync(user);
+            await _testHostFixture.AuthDbContext.SaveChangesAsync();
 
             var token1 = _jwt.GenerateJwtToken(new List<Claim>()
             {
@@ -206,12 +206,12 @@ namespace AuthService.Test.Integration.Api.Controllers.Authentication
                 UserId = user.Id
             };
 
-            await _testHostFixture.AppDbContext.Logins.AddAsync(login1);
-            await _testHostFixture.AppDbContext.Logins.AddAsync(login2);
-            await _testHostFixture.AppDbContext.SaveChangesAsync();
+            await _testHostFixture.AuthDbContext.Logins.AddAsync(login1);
+            await _testHostFixture.AuthDbContext.Logins.AddAsync(login2);
+            await _testHostFixture.AuthDbContext.SaveChangesAsync();
 
-            _testHostFixture.AppDbContext.UntrackEntity(login1);
-            _testHostFixture.AppDbContext.UntrackEntity(login2);
+            _testHostFixture.AuthDbContext.UntrackEntity(login1);
+            _testHostFixture.AuthDbContext.UntrackEntity(login2);
 
             var token = _jwt.GenerateJwtToken(new List<Claim>()
             {
@@ -226,7 +226,7 @@ namespace AuthService.Test.Integration.Api.Controllers.Authentication
             // Assert
             Assert.Equal(HttpStatusCode.OK, result.StatusCode);
 
-            var logins = await _testHostFixture.AppDbContext.Logins
+            var logins = await _testHostFixture.AuthDbContext.Logins
                 .Where(l => l.UserId.Equals(user.Id))
                 .ToListAsync();
             Assert.Single(logins);
@@ -269,8 +269,8 @@ namespace AuthService.Test.Integration.Api.Controllers.Authentication
                 }
             };
 
-            await _testHostFixture.AppDbContext.Users.AddAsync(user);
-            await _testHostFixture.AppDbContext.SaveChangesAsync();
+            await _testHostFixture.AuthDbContext.Users.AddAsync(user);
+            await _testHostFixture.AuthDbContext.SaveChangesAsync();
 
             var token1 = _jwt.GenerateJwtToken(new List<Claim>()
             {
@@ -294,12 +294,12 @@ namespace AuthService.Test.Integration.Api.Controllers.Authentication
                 UserId = user.Id
             };
 
-            await _testHostFixture.AppDbContext.Logins.AddAsync(login1);
-            await _testHostFixture.AppDbContext.Logins.AddAsync(login2);
-            await _testHostFixture.AppDbContext.SaveChangesAsync();
+            await _testHostFixture.AuthDbContext.Logins.AddAsync(login1);
+            await _testHostFixture.AuthDbContext.Logins.AddAsync(login2);
+            await _testHostFixture.AuthDbContext.SaveChangesAsync();
 
-            _testHostFixture.AppDbContext.UntrackEntity(login1);
-            _testHostFixture.AppDbContext.UntrackEntity(login2);
+            _testHostFixture.AuthDbContext.UntrackEntity(login1);
+            _testHostFixture.AuthDbContext.UntrackEntity(login2);
 
             var token = _jwt.GenerateJwtToken(new List<Claim>()
             {
@@ -314,7 +314,7 @@ namespace AuthService.Test.Integration.Api.Controllers.Authentication
             // Assert
             Assert.Equal(HttpStatusCode.OK, result.StatusCode);
 
-            var logins = await _testHostFixture.AppDbContext.Logins
+            var logins = await _testHostFixture.AuthDbContext.Logins
                 .Where(l => l.UserId.Equals(user.Id))
                 .ToListAsync();
             Assert.Empty(logins);

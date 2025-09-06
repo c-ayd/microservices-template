@@ -5,21 +5,21 @@ using AuthService.Application.Settings;
 
 namespace AuthService.Test.Utility.Fixtures.DbContexts
 {
-    public class AppDbContextFixture : IAsyncLifetime
+    public class AuthDbContextFixture : IAsyncLifetime
     {
         public IConfiguration Configuration { get; private set; } = null!;
-        public AppDbContext DbContext { get; private set; } = null!;
+        public AuthDbContext DbContext { get; private set; } = null!;
 
         public async Task InitializeAsync()
         {
             Configuration = ConfigurationHelper.CreateConfiguration();
 
             var connectionStrings = Configuration.GetSection(ConnectionStringsSettings.SettingsKey).Get<ConnectionStringsSettings>()!;
-            var dbContextOptions = new DbContextOptionsBuilder<AppDbContext>()
-                .UseNpgsql(connectionStrings.App)
+            var dbContextOptions = new DbContextOptionsBuilder<AuthDbContext>()
+                .UseNpgsql(connectionStrings.Auth)
                 .Options;
 
-            DbContext = new AppDbContext(dbContextOptions);
+            DbContext = new AuthDbContext(dbContextOptions);
 
             if (await DbContext.Database.CanConnectAsync())
             {

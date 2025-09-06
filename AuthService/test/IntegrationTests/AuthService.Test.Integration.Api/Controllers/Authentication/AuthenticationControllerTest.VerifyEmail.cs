@@ -67,8 +67,8 @@ namespace AuthService.Test.Integration.Api.Controllers.Authentication
             };
 
             var tokenId = user.Tokens[0].Id;
-            await _testHostFixture.AppDbContext.Users.AddAsync(user);
-            await _testHostFixture.AppDbContext.SaveChangesAsync();
+            await _testHostFixture.AuthDbContext.Users.AddAsync(user);
+            await _testHostFixture.AuthDbContext.SaveChangesAsync();
 
             var request = new VerifyEmailRequest()
             {
@@ -81,7 +81,7 @@ namespace AuthService.Test.Integration.Api.Controllers.Authentication
             // Assert
             Assert.Equal(HttpStatusCode.Gone, result.StatusCode);
 
-            var token = await _testHostFixture.AppDbContext.Tokens
+            var token = await _testHostFixture.AuthDbContext.Tokens
                 .Where(t => t.Id.Equals(tokenId))
                 .FirstOrDefaultAsync();
             Assert.Null(token);
@@ -109,8 +109,8 @@ namespace AuthService.Test.Integration.Api.Controllers.Authentication
             isDeleted.Invoke(user, new object[] { true });
 
             var tokenId = user.Tokens[0].Id;
-            await _testHostFixture.AppDbContext.Users.AddAsync(user);
-            await _testHostFixture.AppDbContext.SaveChangesAsync();
+            await _testHostFixture.AuthDbContext.Users.AddAsync(user);
+            await _testHostFixture.AuthDbContext.SaveChangesAsync();
 
             var request = new VerifyEmailRequest()
             {
@@ -123,7 +123,7 @@ namespace AuthService.Test.Integration.Api.Controllers.Authentication
             // Assert
             Assert.Equal(HttpStatusCode.InternalServerError, result.StatusCode);
 
-            var token = await _testHostFixture.AppDbContext.Tokens
+            var token = await _testHostFixture.AuthDbContext.Tokens
                 .Where(t => t.Id.Equals(tokenId))
                 .FirstOrDefaultAsync();
             Assert.Null(token);
@@ -151,12 +151,12 @@ namespace AuthService.Test.Integration.Api.Controllers.Authentication
                 }
             };
 
-            await _testHostFixture.AppDbContext.Users.AddAsync(user);
-            await _testHostFixture.AppDbContext.SaveChangesAsync();
+            await _testHostFixture.AuthDbContext.Users.AddAsync(user);
+            await _testHostFixture.AuthDbContext.SaveChangesAsync();
 
             var tokenId = user.Tokens[0].Id;
-            _testHostFixture.AppDbContext.UntrackEntity(user.SecurityState);
-            _testHostFixture.AppDbContext.UntrackEntity(user);
+            _testHostFixture.AuthDbContext.UntrackEntity(user.SecurityState);
+            _testHostFixture.AuthDbContext.UntrackEntity(user);
 
             var request = new VerifyEmailRequest()
             {
@@ -169,7 +169,7 @@ namespace AuthService.Test.Integration.Api.Controllers.Authentication
             // Assert
             Assert.Equal(HttpStatusCode.Conflict, result.StatusCode);
 
-            var token = await _testHostFixture.AppDbContext.Tokens
+            var token = await _testHostFixture.AuthDbContext.Tokens
                 .Where(t => t.Id.Equals(tokenId))
                 .FirstOrDefaultAsync();
             Assert.Null(token);
@@ -197,13 +197,13 @@ namespace AuthService.Test.Integration.Api.Controllers.Authentication
                 }
             };
 
-            await _testHostFixture.AppDbContext.Users.AddAsync(user);
-            await _testHostFixture.AppDbContext.SaveChangesAsync();
+            await _testHostFixture.AuthDbContext.Users.AddAsync(user);
+            await _testHostFixture.AuthDbContext.SaveChangesAsync();
 
             var userId = user.Id;
             var tokenId = user.Tokens[0].Id;
-            _testHostFixture.AppDbContext.UntrackEntity(user.SecurityState);
-            _testHostFixture.AppDbContext.UntrackEntity(user);
+            _testHostFixture.AuthDbContext.UntrackEntity(user.SecurityState);
+            _testHostFixture.AuthDbContext.UntrackEntity(user);
 
             var request = new VerifyEmailRequest()
             {
@@ -216,13 +216,13 @@ namespace AuthService.Test.Integration.Api.Controllers.Authentication
             // Assert
             Assert.Equal(HttpStatusCode.OK, result.StatusCode);
 
-            var securityState = await _testHostFixture.AppDbContext.SecurityStates
+            var securityState = await _testHostFixture.AuthDbContext.SecurityStates
                 .Where(ss => ss.UserId.Equals(userId))
                 .FirstOrDefaultAsync();
             Assert.NotNull(securityState);
             Assert.True(securityState.IsEmailVerified, "The email is not verified.");
 
-            var token = await _testHostFixture.AppDbContext.Tokens
+            var token = await _testHostFixture.AuthDbContext.Tokens
                 .Where(t => t.Id.Equals(tokenId))
                 .FirstOrDefaultAsync();
             Assert.Null(token);
@@ -257,13 +257,13 @@ namespace AuthService.Test.Integration.Api.Controllers.Authentication
                 }
             };
 
-            await _testHostFixture.AppDbContext.Users.AddAsync(user);
-            await _testHostFixture.AppDbContext.SaveChangesAsync();
+            await _testHostFixture.AuthDbContext.Users.AddAsync(user);
+            await _testHostFixture.AuthDbContext.SaveChangesAsync();
 
             var userId = user.Id;
             var tokenId = user.Tokens[0].Id;
-            _testHostFixture.AppDbContext.UntrackEntity(user.SecurityState);
-            _testHostFixture.AppDbContext.UntrackEntity(user);
+            _testHostFixture.AuthDbContext.UntrackEntity(user.SecurityState);
+            _testHostFixture.AuthDbContext.UntrackEntity(user);
 
             var request = new VerifyEmailRequest()
             {
@@ -276,20 +276,20 @@ namespace AuthService.Test.Integration.Api.Controllers.Authentication
             // Assert
             Assert.Equal(HttpStatusCode.OK, result.StatusCode);
 
-            var userResult = await _testHostFixture.AppDbContext.Users
+            var userResult = await _testHostFixture.AuthDbContext.Users
                 .Where(u => u.Id.Equals(userId))
                 .FirstOrDefaultAsync();
             Assert.NotNull(userResult);
             Assert.Equal(newEmail.ToLower(), userResult.Email);
             Assert.Null(userResult.NewEmail);
 
-            var securityState = await _testHostFixture.AppDbContext.SecurityStates
+            var securityState = await _testHostFixture.AuthDbContext.SecurityStates
                 .Where(ss => ss.UserId.Equals(userId))
                 .FirstOrDefaultAsync();
             Assert.NotNull(securityState);
             Assert.True(securityState.IsEmailVerified, "The email is not verified.");
 
-            var token = await _testHostFixture.AppDbContext.Tokens
+            var token = await _testHostFixture.AuthDbContext.Tokens
                 .Where(t => t.Id.Equals(tokenId))
                 .FirstOrDefaultAsync();
             Assert.Null(token);

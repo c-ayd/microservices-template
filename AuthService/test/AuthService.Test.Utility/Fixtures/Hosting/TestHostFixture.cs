@@ -21,7 +21,7 @@ namespace AuthService.Test.Utility.Fixtures.Hosting
 
         public IConfiguration Configuration { get; private set; } = null!;
 
-        public AppDbContext AppDbContext { get; private set; } = null!;
+        public AuthDbContext AuthDbContext { get; private set; } = null!;
 
         public async Task InitializeAsync()
         {
@@ -68,7 +68,7 @@ namespace AuthService.Test.Utility.Fixtures.Hosting
 
         public async Task DisposeAsync()
         {
-            await AppDbContext.Database.EnsureDeletedAsync();
+            await AuthDbContext.Database.EnsureDeletedAsync();
 
             await Host.StopAsync();
             Host.Dispose();
@@ -96,19 +96,19 @@ namespace AuthService.Test.Utility.Fixtures.Hosting
 
         private async Task CreateDatabase()
         {
-            AppDbContext = Host.Services.GetRequiredService<AppDbContext>();
+            AuthDbContext = Host.Services.GetRequiredService<AuthDbContext>();
 
-            if (await AppDbContext.Database.CanConnectAsync())
+            if (await AuthDbContext.Database.CanConnectAsync())
             {
-                await AppDbContext.Database.EnsureCreatedAsync();
+                await AuthDbContext.Database.EnsureCreatedAsync();
             }
 
-            await AppDbContext.Database.MigrateAsync();
+            await AuthDbContext.Database.MigrateAsync();
         }
 
         private async Task SeedData()
         {
-            await Host.Services.SeedDataAppDbContext(Configuration);
+            await Host.Services.SeedDataAuthDbContext(Configuration);
         }
     }
 }

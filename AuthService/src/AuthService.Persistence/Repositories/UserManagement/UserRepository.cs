@@ -7,41 +7,41 @@ namespace AuthService.Persistence.Repositories.UserManagement
 {
     public class UserRepository : IUserRepository
     {
-        private readonly AppDbContext _appDbContext;
+        private readonly AuthDbContext _authDbContext;
 
-        public UserRepository(AppDbContext appDbContext)
+        public UserRepository(AuthDbContext authDbContext)
         {
-            _appDbContext = appDbContext;
+            _authDbContext = authDbContext;
         }
 
         public async Task AddAsync(User newUser)
-            => await _appDbContext.Users.AddAsync(newUser);
+            => await _authDbContext.Users.AddAsync(newUser);
 
         public async Task<User?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
-            => await _appDbContext.Users
+            => await _authDbContext.Users
                 .Where(u => u.Id.Equals(id))
                 .FirstOrDefaultAsync(cancellationToken);
 
         public async Task<User?> GetByEmailAsync(string email, CancellationToken cancellationToken = default)
-            => await _appDbContext.Users
+            => await _authDbContext.Users
                 .Where(u => u.Email == email)
                 .FirstOrDefaultAsync(cancellationToken);
 
         public async Task<User?> GetByIdWithSecurityStateAsync(Guid id, CancellationToken cancellationToken = default)
-            => await _appDbContext.Users
+            => await _authDbContext.Users
                 .Where(u => u.Id.Equals(id))
                 .Include(u => u.SecurityState)
                 .FirstOrDefaultAsync(cancellationToken);
 
         public async Task<User?> GetByEmailWithSecurityStateAsync(string email, CancellationToken cancellationToken = default)
-            => await _appDbContext.Users
+            => await _authDbContext.Users
                 .Where(u => u.Email == email)
                 .Include(u => u.SecurityState)
                 .FirstOrDefaultAsync(cancellationToken);
 
         public async Task<Guid?> GetIdByEmailAsync(string email, CancellationToken cancellationToken = default)
         {
-            var id = await _appDbContext.Users
+            var id = await _authDbContext.Users
                 .Where(u => u.Email == email)
                 .Select(u => u.Id)
                 .FirstOrDefaultAsync(cancellationToken);
@@ -50,35 +50,35 @@ namespace AuthService.Persistence.Repositories.UserManagement
         }
 
         public async Task<string?> GetEmailByIdAsync(Guid id, CancellationToken cancellationToken = default)
-            => await _appDbContext.Users
+            => await _authDbContext.Users
                 .Where(u => u.Id.Equals(id))
                 .Select(u => u.Email)
                 .FirstOrDefaultAsync(cancellationToken);
 
         public async Task<SecurityState?> GetSecurityStateByIdAsync(Guid id, CancellationToken cancellationToken = default)
-            => await _appDbContext.Users
+            => await _authDbContext.Users
                 .Where(u => u.Id.Equals(id))
                 .Select(u => u.SecurityState)
                 .FirstOrDefaultAsync(cancellationToken);
 
         public async Task<SecurityState?> GetSecurityStateByEmailAsync(string email, CancellationToken cancellationToken = default)
-            => await _appDbContext.Users
+            => await _authDbContext.Users
                 .Where(u => u.Email == email)
                 .Select(u => u.SecurityState)
                 .FirstOrDefaultAsync(cancellationToken);
 
         public void Delete(User user)
-            => _appDbContext.Remove(user);
+            => _authDbContext.Remove(user);
 
         public async Task<List<Role>?> GetRolesByIdAsync(Guid id, CancellationToken cancellationToken = default)
-            => await _appDbContext.Users
+            => await _authDbContext.Users
                 .AsNoTracking()
                 .Where(u => u.Id.Equals(id))
                 .Select(u => u.Roles)
                 .FirstOrDefaultAsync(cancellationToken);
 
         public async Task<List<Role>?> GetRolesByEmailAsync(string email, CancellationToken cancellationToken = default)
-            => await _appDbContext.Users
+            => await _authDbContext.Users
                 .AsNoTracking()
                 .Where(u => u.Email == email)
                 .Select(u => u.Roles)
@@ -86,7 +86,7 @@ namespace AuthService.Persistence.Repositories.UserManagement
 
         public async Task<(List<User>, int)> GetAllAsync(int page, int pageSize, int numberOfNextPagesToCheck, CancellationToken cancellationToken = default)
         {
-            var users = await _appDbContext.Users
+            var users = await _authDbContext.Users
                 .AsNoTracking()
                 .IgnoreQueryFilters()
                 .OrderByDescending(u => u.CreatedDate)
@@ -97,7 +97,7 @@ namespace AuthService.Persistence.Repositories.UserManagement
             if (users.Count == 0)
                 return (users, 0);
 
-            var count = await _appDbContext.Users
+            var count = await _authDbContext.Users
                 .AsNoTracking()
                 .OrderByDescending(u => u.CreatedDate)
                 .Skip(page * pageSize)
@@ -109,7 +109,7 @@ namespace AuthService.Persistence.Repositories.UserManagement
         }
 
         public async Task<User?> GetWithFullContextByIdAsync(Guid id, CancellationToken cancellationToken = default)
-            => await _appDbContext.Users
+            => await _authDbContext.Users
                 .AsNoTracking()
                 .IgnoreQueryFilters()
                 .Where(u => u.Id.Equals(id))
@@ -119,7 +119,7 @@ namespace AuthService.Persistence.Repositories.UserManagement
                 .FirstOrDefaultAsync();
 
         public async Task<User?> GetWithFullContextByEmailAsync(string email, CancellationToken cancellationToken = default)
-            => await _appDbContext.Users
+            => await _authDbContext.Users
                 .AsNoTracking()
                 .IgnoreQueryFilters()
                 .Where(u => u.Email == email)

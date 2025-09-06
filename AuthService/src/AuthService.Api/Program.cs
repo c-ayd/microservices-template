@@ -25,7 +25,7 @@ builder.Services.ConfigureDataProtection(builder.Configuration);
 
 var app = builder.Build();
 
-await app.Services.SeedDataAppDbContext(app.Configuration);
+await app.Services.SeedDataAuthDbContext(app.Configuration);
 
 app.AddMiddlewares();
 

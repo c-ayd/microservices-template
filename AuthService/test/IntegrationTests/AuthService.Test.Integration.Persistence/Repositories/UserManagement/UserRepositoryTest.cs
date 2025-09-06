@@ -9,17 +9,17 @@ using AuthService.Test.Utility.Fixtures.DbContexts;
 
 namespace AuthService.Test.Integration.Persistence.Repositories.UserManagement
 {
-    [Collection(nameof(AppDbContextCollection))]
+    [Collection(nameof(AuthDbContextCollection))]
     public class UserRepositoryTest
     {
-        private readonly AppDbContext _appDbContext;
+        private readonly AuthDbContext _authDbContext;
         private readonly UserRepository _userRepository;
 
-        public UserRepositoryTest(AppDbContextFixture appDbContextFixture)
+        public UserRepositoryTest(AuthDbContextFixture authDbContextFixture)
         {
-            _appDbContext = appDbContextFixture.DbContext;
+            _authDbContext = authDbContextFixture.DbContext;
 
-            _userRepository = new UserRepository(_appDbContext);
+            _userRepository = new UserRepository(_authDbContext);
         }
 
         [Fact]
@@ -30,12 +30,12 @@ namespace AuthService.Test.Integration.Persistence.Repositories.UserManagement
 
             // Act
             await _userRepository.AddAsync(user);
-            await _appDbContext.SaveChangesAsync();
+            await _authDbContext.SaveChangesAsync();
 
             // Arrange
             var userId = user.Id;
-            _appDbContext.UntrackEntity(user);
-            var result = await _appDbContext.Users
+            _authDbContext.UntrackEntity(user);
+            var result = await _authDbContext.Users
                 .Where(u => u.Id.Equals(userId))
                 .FirstOrDefaultAsync();
 
@@ -49,10 +49,10 @@ namespace AuthService.Test.Integration.Persistence.Repositories.UserManagement
             var user = new User();
 
             await _userRepository.AddAsync(user);
-            await _appDbContext.SaveChangesAsync();
+            await _authDbContext.SaveChangesAsync();
 
             var userId = user.Id;
-            _appDbContext.UntrackEntity(user);
+            _authDbContext.UntrackEntity(user);
 
             // Act
             var result = await _userRepository.GetByIdAsync(userId);
@@ -82,9 +82,9 @@ namespace AuthService.Test.Integration.Persistence.Repositories.UserManagement
             };
 
             await _userRepository.AddAsync(user);
-            await _appDbContext.SaveChangesAsync();
+            await _authDbContext.SaveChangesAsync();
 
-            _appDbContext.UntrackEntity(user);
+            _authDbContext.UntrackEntity(user);
 
             // Act
             var result = await _userRepository.GetByEmailAsync(email);
@@ -116,10 +116,10 @@ namespace AuthService.Test.Integration.Persistence.Repositories.UserManagement
             };
 
             await _userRepository.AddAsync(user);
-            await _appDbContext.SaveChangesAsync();
+            await _authDbContext.SaveChangesAsync();
 
             var userId = user.Id;
-            _appDbContext.UntrackEntity(user);
+            _authDbContext.UntrackEntity(user);
 
             // Act
             var result = await _userRepository.GetByIdWithSecurityStateAsync(userId);
@@ -155,9 +155,9 @@ namespace AuthService.Test.Integration.Persistence.Repositories.UserManagement
             };
 
             await _userRepository.AddAsync(user);
-            await _appDbContext.SaveChangesAsync();
+            await _authDbContext.SaveChangesAsync();
 
-            _appDbContext.UntrackEntity(user);
+            _authDbContext.UntrackEntity(user);
 
             // Act
             var result = await _userRepository.GetByEmailWithSecurityStateAsync(email);
@@ -189,10 +189,10 @@ namespace AuthService.Test.Integration.Persistence.Repositories.UserManagement
             };
 
             await _userRepository.AddAsync(user);
-            await _appDbContext.SaveChangesAsync();
+            await _authDbContext.SaveChangesAsync();
 
             var userId = user.Id;
-            _appDbContext.UntrackEntity(user);
+            _authDbContext.UntrackEntity(user);
 
             // Act
             var result = await _userRepository.GetIdByEmailAsync(email);
@@ -223,10 +223,10 @@ namespace AuthService.Test.Integration.Persistence.Repositories.UserManagement
             };
 
             await _userRepository.AddAsync(user);
-            await _appDbContext.SaveChangesAsync();
+            await _authDbContext.SaveChangesAsync();
 
             var userId = user.Id;
-            _appDbContext.UntrackEntity(user);
+            _authDbContext.UntrackEntity(user);
 
             // Act
             var result = await _userRepository.GetEmailByIdAsync(userId);
@@ -256,10 +256,10 @@ namespace AuthService.Test.Integration.Persistence.Repositories.UserManagement
             };
 
             await _userRepository.AddAsync(user);
-            await _appDbContext.SaveChangesAsync();
+            await _authDbContext.SaveChangesAsync();
 
             var userId = user.Id;
-            _appDbContext.UntrackEntity(user);
+            _authDbContext.UntrackEntity(user);
 
             // Act
             var result = await _userRepository.GetSecurityStateByIdAsync(userId);
@@ -290,10 +290,10 @@ namespace AuthService.Test.Integration.Persistence.Repositories.UserManagement
             };
 
             await _userRepository.AddAsync(user);
-            await _appDbContext.SaveChangesAsync();
+            await _authDbContext.SaveChangesAsync();
 
             var userId = user.Id;
-            _appDbContext.UntrackEntity(user);
+            _authDbContext.UntrackEntity(user);
 
             // Act
             var result = await _userRepository.GetSecurityStateByEmailAsync(email);
@@ -321,17 +321,17 @@ namespace AuthService.Test.Integration.Persistence.Repositories.UserManagement
             var user = new User();
 
             await _userRepository.AddAsync(user);
-            await _appDbContext.SaveChangesAsync();
+            await _authDbContext.SaveChangesAsync();
 
             var userId = user.Id;
 
             // Act
             _userRepository.Delete(user);
-            await _appDbContext.SaveChangesAsync();
+            await _authDbContext.SaveChangesAsync();
 
             // Arrange
-            _appDbContext.UntrackEntity(user);
-            var result = await _appDbContext.Users
+            _authDbContext.UntrackEntity(user);
+            var result = await _authDbContext.Users
                 .IgnoreQueryFilters()
                 .Where(u => u.Id.Equals(userId))
                 .FirstOrDefaultAsync();
@@ -355,10 +355,10 @@ namespace AuthService.Test.Integration.Persistence.Repositories.UserManagement
             user.Roles = roles;
 
             await _userRepository.AddAsync(user);
-            await _appDbContext.SaveChangesAsync();
+            await _authDbContext.SaveChangesAsync();
 
             var userId = user.Id;
-            _appDbContext.UntrackEntity(user);
+            _authDbContext.UntrackEntity(user);
 
             // Act
             var result = await _userRepository.GetRolesByIdAsync(userId);
@@ -374,10 +374,10 @@ namespace AuthService.Test.Integration.Persistence.Repositories.UserManagement
             // Arrange
             var user = new User();
             await _userRepository.AddAsync(user);
-            await _appDbContext.SaveChangesAsync();
+            await _authDbContext.SaveChangesAsync();
 
             var userId = user.Id;
-            _appDbContext.UntrackEntity(user);
+            _authDbContext.UntrackEntity(user);
 
             // Act
             var result = await _userRepository.GetRolesByIdAsync(userId);
@@ -415,9 +415,9 @@ namespace AuthService.Test.Integration.Persistence.Repositories.UserManagement
             user.Roles = roles;
 
             await _userRepository.AddAsync(user);
-            await _appDbContext.SaveChangesAsync();
+            await _authDbContext.SaveChangesAsync();
 
-            _appDbContext.UntrackEntity(user);
+            _authDbContext.UntrackEntity(user);
 
             // Act
             var result = await _userRepository.GetRolesByEmailAsync(email);
@@ -438,9 +438,9 @@ namespace AuthService.Test.Integration.Persistence.Repositories.UserManagement
             };
 
             await _userRepository.AddAsync(user);
-            await _appDbContext.SaveChangesAsync();
+            await _authDbContext.SaveChangesAsync();
 
-            _appDbContext.UntrackEntity(user);
+            _authDbContext.UntrackEntity(user);
 
             // Act
             var result = await _userRepository.GetRolesByEmailAsync(email);
@@ -484,7 +484,7 @@ namespace AuthService.Test.Integration.Persistence.Repositories.UserManagement
                 await _userRepository.AddAsync(new User());
             }
 
-            await _appDbContext.SaveChangesAsync();
+            await _authDbContext.SaveChangesAsync();
 
             int pageSize = 15;
 
@@ -506,7 +506,7 @@ namespace AuthService.Test.Integration.Persistence.Repositories.UserManagement
                 await _userRepository.AddAsync(new User());
             }
 
-            await _appDbContext.SaveChangesAsync();
+            await _authDbContext.SaveChangesAsync();
 
             int page = 1;
             int pageSize = 15;
@@ -549,13 +549,13 @@ namespace AuthService.Test.Integration.Persistence.Repositories.UserManagement
             };
 
             await _userRepository.AddAsync(user);
-            await _appDbContext.SaveChangesAsync();
+            await _authDbContext.SaveChangesAsync();
 
             var userId = user.Id;
-            _appDbContext.UntrackEntities(user.Roles.ToArray());
-            _appDbContext.UntrackEntities(user.Logins.ToArray());
-            _appDbContext.UntrackEntity(user.SecurityState);
-            _appDbContext.UntrackEntity(user);
+            _authDbContext.UntrackEntities(user.Roles.ToArray());
+            _authDbContext.UntrackEntities(user.Logins.ToArray());
+            _authDbContext.UntrackEntity(user.SecurityState);
+            _authDbContext.UntrackEntity(user);
 
             // Act
             var result = await _userRepository.GetWithFullContextByIdAsync(userId);
@@ -597,12 +597,12 @@ namespace AuthService.Test.Integration.Persistence.Repositories.UserManagement
             };
 
             await _userRepository.AddAsync(user);
-            await _appDbContext.SaveChangesAsync();
+            await _authDbContext.SaveChangesAsync();
 
-            _appDbContext.UntrackEntities(user.Roles.ToArray());
-            _appDbContext.UntrackEntities(user.Logins.ToArray());
-            _appDbContext.UntrackEntity(user.SecurityState);
-            _appDbContext.UntrackEntity(user);
+            _authDbContext.UntrackEntities(user.Roles.ToArray());
+            _authDbContext.UntrackEntities(user.Logins.ToArray());
+            _authDbContext.UntrackEntity(user.SecurityState);
+            _authDbContext.UntrackEntity(user);
 
             // Act
             var result = await _userRepository.GetWithFullContextByEmailAsync(email);

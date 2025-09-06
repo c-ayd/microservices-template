@@ -102,12 +102,12 @@ namespace AuthService.Test.Integration.Api.Controllers.Authentication
             // Assert
             Assert.Equal(HttpStatusCode.MultiStatus, result.StatusCode);
 
-            var user = await _testHostFixture.AppDbContext.Users
+            var user = await _testHostFixture.AuthDbContext.Users
                 .Where(u => u.Email == request.Email)
                 .FirstOrDefaultAsync();
             Assert.NotNull(user);
 
-            var token = await _testHostFixture.AppDbContext.Tokens
+            var token = await _testHostFixture.AuthDbContext.Tokens
                 .Where(t => t.UserId.Equals(user.Id))
                 .FirstOrDefaultAsync();
             Assert.NotNull(token);
@@ -135,12 +135,12 @@ namespace AuthService.Test.Integration.Api.Controllers.Authentication
             // Assert
             Assert.Equal(HttpStatusCode.OK, result.StatusCode);
 
-            var user = await _testHostFixture.AppDbContext.Users
+            var user = await _testHostFixture.AuthDbContext.Users
                 .Where(u => u.Email == request.Email)
                 .FirstOrDefaultAsync();
             Assert.NotNull(user);
 
-            var token = await _testHostFixture.AppDbContext.Tokens
+            var token = await _testHostFixture.AuthDbContext.Tokens
                 .Where(t => t.UserId.Equals(user.Id))
                 .FirstOrDefaultAsync();
             Assert.NotNull(token);

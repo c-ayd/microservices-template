@@ -9,17 +9,17 @@ using AuthService.Test.Utility.Fixtures.DbContexts;
 
 namespace AuthService.Test.Integration.Persistence.Repositories.UserManagement
 {
-    [Collection(nameof(AppDbContextCollection))]
+    [Collection(nameof(AuthDbContextCollection))]
     public class RoleRepositoryTest
     {
-        private readonly AppDbContext _appDbContext;
+        private readonly AuthDbContext _authDbContext;
         private readonly RoleRepository _roleRepository;
 
-        public RoleRepositoryTest(AppDbContextFixture appDbContextFixture)
+        public RoleRepositoryTest(AuthDbContextFixture authDbContextFixture)
         {
-            _appDbContext = appDbContextFixture.DbContext;
+            _authDbContext = authDbContextFixture.DbContext;
 
-            _roleRepository = new RoleRepository(_appDbContext);
+            _roleRepository = new RoleRepository(_authDbContext);
         }
 
         [Fact]
@@ -33,12 +33,12 @@ namespace AuthService.Test.Integration.Persistence.Repositories.UserManagement
 
             // Act
             await _roleRepository.AddAsync(role);
-            await _appDbContext.SaveChangesAsync();
+            await _authDbContext.SaveChangesAsync();
 
             // Assert
             var roleId = role.Id;
-            _appDbContext.UntrackEntity(role);
-            var result = await _appDbContext.Roles
+            _authDbContext.UntrackEntity(role);
+            var result = await _authDbContext.Roles
                 .Where(u => u.Id.Equals(roleId))
                 .FirstOrDefaultAsync();
 
@@ -55,10 +55,10 @@ namespace AuthService.Test.Integration.Persistence.Repositories.UserManagement
             };
 
             await _roleRepository.AddAsync(role);
-            await _appDbContext.SaveChangesAsync();
+            await _authDbContext.SaveChangesAsync();
 
             var roleId = role.Id;
-            _appDbContext.UntrackEntity(role);
+            _authDbContext.UntrackEntity(role);
 
             // Act
             var result = await _roleRepository.GetByIdAsync(roleId);
@@ -88,9 +88,9 @@ namespace AuthService.Test.Integration.Persistence.Repositories.UserManagement
             };
 
             await _roleRepository.AddAsync(role);
-            await _appDbContext.SaveChangesAsync();
+            await _authDbContext.SaveChangesAsync();
 
-            _appDbContext.UntrackEntity(role);
+            _authDbContext.UntrackEntity(role);
 
             // Act
             var result = await _roleRepository.GetByNameAsync(name);
@@ -127,9 +127,9 @@ namespace AuthService.Test.Integration.Persistence.Repositories.UserManagement
                 await _roleRepository.AddAsync(role);
             }
 
-            await _appDbContext.SaveChangesAsync();
+            await _authDbContext.SaveChangesAsync();
 
-            _appDbContext.UntrackEntities(roles.ToArray());
+            _authDbContext.UntrackEntities(roles.ToArray());
 
             int page = 1;
             int pageSize = 3;
@@ -159,9 +159,9 @@ namespace AuthService.Test.Integration.Persistence.Repositories.UserManagement
                 await _roleRepository.AddAsync(role);
             }
 
-            await _appDbContext.SaveChangesAsync();
+            await _authDbContext.SaveChangesAsync();
 
-            _appDbContext.UntrackEntities(roles.ToArray());
+            _authDbContext.UntrackEntities(roles.ToArray());
 
             int page = 10;
             int pageSize = 10;
@@ -191,9 +191,9 @@ namespace AuthService.Test.Integration.Persistence.Repositories.UserManagement
                 await _roleRepository.AddAsync(role);
             }
 
-            await _appDbContext.SaveChangesAsync();
+            await _authDbContext.SaveChangesAsync();
 
-            _appDbContext.UntrackEntities(roles.ToArray());
+            _authDbContext.UntrackEntities(roles.ToArray());
 
             int page = 0;
             int pageSize = -5;
@@ -219,17 +219,17 @@ namespace AuthService.Test.Integration.Persistence.Repositories.UserManagement
             };
 
             await _roleRepository.AddAsync(role);
-            await _appDbContext.SaveChangesAsync();
+            await _authDbContext.SaveChangesAsync();
 
             var roleId = role.Id;
 
             // Act
             _roleRepository.Delete(role);
-            await _appDbContext.SaveChangesAsync();
+            await _authDbContext.SaveChangesAsync();
 
             // Arrange
-            _appDbContext.UntrackEntity(role);
-            var result = await _appDbContext.Roles
+            _authDbContext.UntrackEntity(role);
+            var result = await _authDbContext.Roles
                 .IgnoreQueryFilters()
                 .Where(u => u.Id.Equals(roleId))
                 .FirstOrDefaultAsync();

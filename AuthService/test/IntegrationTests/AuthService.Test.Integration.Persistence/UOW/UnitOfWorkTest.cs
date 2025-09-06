@@ -11,17 +11,17 @@ using AuthService.Test.Utility.Fixtures.DbContexts;
 
 namespace AuthService.Test.Integration.Persistence.UOW
 {
-    [Collection(nameof(AppDbContextCollection))]
+    [Collection(nameof(AuthDbContextCollection))]
     public class UnitOfWorkTest
     {
-        private readonly AppDbContext _appDbContext;
+        private readonly AuthDbContext _authDbContext;
         private readonly UnitOfWork _unitOfWork;
 
-        public UnitOfWorkTest(AppDbContextFixture appDbContextFixture)
+        public UnitOfWorkTest(AuthDbContextFixture authDbContextFixture)
         {
-            _appDbContext = appDbContextFixture.DbContext;
+            _authDbContext = authDbContextFixture.DbContext;
 
-            _unitOfWork = new UnitOfWork(_appDbContext);
+            _unitOfWork = new UnitOfWork(_authDbContext);
         }
 
         public enum ETransactionResult
@@ -47,8 +47,8 @@ namespace AuthService.Test.Integration.Persistence.UOW
             {
                 try
                 {
-                    await _appDbContext.Users.AddAsync(user);
-                    await _appDbContext.SaveChangesAsync();
+                    await _authDbContext.Users.AddAsync(user);
+                    await _authDbContext.SaveChangesAsync();
 
                     switch (transactionResult)
                     {
@@ -74,8 +74,8 @@ namespace AuthService.Test.Integration.Persistence.UOW
             // Assert
             if (transactionResult == ETransactionResult.Commit)
             {
-                _appDbContext.UntrackEntity(user);
-                var result = await _appDbContext.Users
+                _authDbContext.UntrackEntity(user);
+                var result = await _authDbContext.Users
                     .Where(u => u.Email == email)
                     .FirstOrDefaultAsync();
 
@@ -83,7 +83,7 @@ namespace AuthService.Test.Integration.Persistence.UOW
             }
             else
             {
-                var result = await _appDbContext.Users
+                var result = await _authDbContext.Users
                     .Where(u => u.Email == email)
                     .FirstOrDefaultAsync();
 

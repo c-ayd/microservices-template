@@ -13,7 +13,7 @@ namespace AuthService.Test.Utility
             var apiProjectPath = GetApiProjectPath();
 
             return new ConfigurationBuilder()
-                .AddUserSecrets<AppDbContextFixture>()
+                .AddUserSecrets<AuthDbContextFixture>()
                 .AddJsonFile(_apiProjectPath + "/appsettings.json")
                 .Build();
         }

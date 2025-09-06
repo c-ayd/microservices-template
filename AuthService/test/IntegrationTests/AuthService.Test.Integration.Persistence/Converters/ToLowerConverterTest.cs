@@ -8,14 +8,14 @@ using AuthService.Test.Utility.Fixtures.DbContexts;
 
 namespace AuthService.Test.Integration.Persistence.Converters
 {
-    [Collection(nameof(AppDbContextCollection))]
+    [Collection(nameof(AuthDbContextCollection))]
     public class ToLowerConverterTest
     {
-        private readonly AppDbContext _appDbContext;
+        private readonly AuthDbContext _authDbContext;
 
-        public ToLowerConverterTest(AppDbContextFixture appDbContextFixture)
+        public ToLowerConverterTest(AuthDbContextFixture authDbContextFixture)
         {
-            _appDbContext = appDbContextFixture.DbContext;
+            _authDbContext = authDbContextFixture.DbContext;
         }
 
         [Fact]
@@ -29,14 +29,14 @@ namespace AuthService.Test.Integration.Persistence.Converters
             };
 
             // Act
-            await _appDbContext.Users.AddAsync(user);
-            await _appDbContext.SaveChangesAsync();
+            await _authDbContext.Users.AddAsync(user);
+            await _authDbContext.SaveChangesAsync();
 
             // Assert
             var userId = user.Id;
-            _appDbContext.UntrackEntity(user);
+            _authDbContext.UntrackEntity(user);
 
-            var emailDb = await _appDbContext.Users
+            var emailDb = await _authDbContext.Users
                 .Where(u => u.Id.Equals(userId))
                 .Select(u => u.Email)
                 .FirstOrDefaultAsync();

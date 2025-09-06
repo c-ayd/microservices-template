@@ -100,8 +100,8 @@ namespace AuthService.Test.Integration.Api.Controllers.Authentication
                 }
             };
 
-            await _testHostFixture.AppDbContext.Users.AddAsync(user);
-            await _testHostFixture.AppDbContext.SaveChangesAsync();
+            await _testHostFixture.AuthDbContext.Users.AddAsync(user);
+            await _testHostFixture.AuthDbContext.SaveChangesAsync();
 
             var request = new ResetPasswordRequest()
             {
@@ -143,8 +143,8 @@ namespace AuthService.Test.Integration.Api.Controllers.Authentication
             var isDeleted = typeof(User).GetProperty(nameof(User.IsDeleted), BindingFlags.Instance | BindingFlags.Public)!.GetSetMethod(nonPublic: true)!;
             isDeleted.Invoke(user, new object[] { true });
 
-            await _testHostFixture.AppDbContext.Users.AddAsync(user);
-            await _testHostFixture.AppDbContext.SaveChangesAsync();
+            await _testHostFixture.AuthDbContext.Users.AddAsync(user);
+            await _testHostFixture.AuthDbContext.SaveChangesAsync();
 
             var request = new ResetPasswordRequest()
             {
@@ -201,14 +201,14 @@ namespace AuthService.Test.Integration.Api.Controllers.Authentication
                 }
             };
 
-            await _testHostFixture.AppDbContext.Users.AddAsync(user);
-            await _testHostFixture.AppDbContext.SaveChangesAsync();
+            await _testHostFixture.AuthDbContext.Users.AddAsync(user);
+            await _testHostFixture.AuthDbContext.SaveChangesAsync();
 
             var userId = user.Id;
-            _testHostFixture.AppDbContext.UntrackEntities(user.Logins.ToArray());
-            _testHostFixture.AppDbContext.UntrackEntities(user.Tokens.ToArray());
-            _testHostFixture.AppDbContext.UntrackEntity(user.SecurityState);
-            _testHostFixture.AppDbContext.UntrackEntity(user);
+            _testHostFixture.AuthDbContext.UntrackEntities(user.Logins.ToArray());
+            _testHostFixture.AuthDbContext.UntrackEntities(user.Tokens.ToArray());
+            _testHostFixture.AuthDbContext.UntrackEntity(user.SecurityState);
+            _testHostFixture.AuthDbContext.UntrackEntity(user);
 
             var newPassword = PasswordGenerator.GenerateWithCustomRules(
                     length: 10,
@@ -230,18 +230,18 @@ namespace AuthService.Test.Integration.Api.Controllers.Authentication
             // Assert
             Assert.Equal(HttpStatusCode.OK, result.StatusCode);
 
-            var securityState = await _testHostFixture.AppDbContext.SecurityStates
+            var securityState = await _testHostFixture.AuthDbContext.SecurityStates
                 .Where(ss => ss.UserId.Equals(userId))
                 .FirstOrDefaultAsync();
             Assert.NotNull(securityState);
             Assert.Equal(EPasswordVerificationResult.Success, _hashing.VerifyPassword(securityState.PasswordHashed!, newPassword));
 
-            var logins = await _testHostFixture.AppDbContext.Logins
+            var logins = await _testHostFixture.AuthDbContext.Logins
                 .Where(l => l.UserId.Equals(userId))
                 .ToListAsync();
             Assert.Single(logins);
 
-            var tokens = await _testHostFixture.AppDbContext.Tokens
+            var tokens = await _testHostFixture.AuthDbContext.Tokens
                 .Where(t => t.UserId.Equals(userId))
                 .ToListAsync();
             Assert.Single(tokens);
@@ -284,14 +284,14 @@ namespace AuthService.Test.Integration.Api.Controllers.Authentication
                 }
             };
 
-            await _testHostFixture.AppDbContext.Users.AddAsync(user);
-            await _testHostFixture.AppDbContext.SaveChangesAsync();
+            await _testHostFixture.AuthDbContext.Users.AddAsync(user);
+            await _testHostFixture.AuthDbContext.SaveChangesAsync();
 
             var userId = user.Id;
-            _testHostFixture.AppDbContext.UntrackEntities(user.Logins.ToArray());
-            _testHostFixture.AppDbContext.UntrackEntities(user.Tokens.ToArray());
-            _testHostFixture.AppDbContext.UntrackEntity(user.SecurityState);
-            _testHostFixture.AppDbContext.UntrackEntity(user);
+            _testHostFixture.AuthDbContext.UntrackEntities(user.Logins.ToArray());
+            _testHostFixture.AuthDbContext.UntrackEntities(user.Tokens.ToArray());
+            _testHostFixture.AuthDbContext.UntrackEntity(user.SecurityState);
+            _testHostFixture.AuthDbContext.UntrackEntity(user);
 
             var newPassword = PasswordGenerator.GenerateWithCustomRules(
                     length: 10,
@@ -313,18 +313,18 @@ namespace AuthService.Test.Integration.Api.Controllers.Authentication
             // Assert
             Assert.Equal(HttpStatusCode.OK, result.StatusCode);
 
-            var securityState = await _testHostFixture.AppDbContext.SecurityStates
+            var securityState = await _testHostFixture.AuthDbContext.SecurityStates
                 .Where(ss => ss.UserId.Equals(userId))
                 .FirstOrDefaultAsync();
             Assert.NotNull(securityState);
             Assert.Equal(EPasswordVerificationResult.Success, _hashing.VerifyPassword(securityState.PasswordHashed!, newPassword));
 
-            var logins = await _testHostFixture.AppDbContext.Logins
+            var logins = await _testHostFixture.AuthDbContext.Logins
                 .Where(l => l.UserId.Equals(userId))
                 .ToListAsync();
             Assert.Empty(logins);
 
-            var tokens = await _testHostFixture.AppDbContext.Tokens
+            var tokens = await _testHostFixture.AuthDbContext.Tokens
                 .Where(t => t.UserId.Equals(userId))
                 .ToListAsync();
             Assert.Single(tokens);

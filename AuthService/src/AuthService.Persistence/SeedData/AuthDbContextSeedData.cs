@@ -1,5 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
+﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using AuthService.Application.Policies;
 using AuthService.Domain.Entities.UserManagement;
@@ -8,9 +7,9 @@ using AuthService.Persistence.Settings;
 
 namespace AuthService.Persistence.SeedData
 {
-    public static class AppDbContextSeedData
+    public static class AuthDbContextSeedData
     {
-        public static async Task SeedDataAppDbContext(this IServiceProvider services, IConfiguration configuration)
+        public static async Task SeedDataAuthDbContext(this IServiceProvider services, IConfiguration configuration)
         {
             /**
              * NOTE: This seed data method is an example to show how to add default roles and email addresses.
@@ -18,19 +17,19 @@ namespace AuthService.Persistence.SeedData
              */
 
             await using var scope = services.CreateAsyncScope();
-            var appDbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-            var seedDataSettings = configuration.GetSection(SeedDataAppDbContextSettings.SettingsKey).Get<SeedDataAppDbContextSettings>()!;
+            var authDbContext = scope.ServiceProvider.GetRequiredService<AuthDbContext>();
+            var seedDataSettings = configuration.GetSection(SeedDataAuthDbContextSettings.SettingsKey).Get<SeedDataAuthDbContextSettings>()!;
 
-            await appDbContext.Database.EnsureCreatedAsync();
+            await authDbContext.Database.EnsureCreatedAsync();
 
-            await using var transaction = await appDbContext.Database.BeginTransactionAsync();
+            await using var transaction = await authDbContext.Database.BeginTransactionAsync();
             try
             {
-                var roles = await AddDefaultRoles(appDbContext);
+                var roles = await AddDefaultRoles(authDbContext);
                 if (roles.Count == 0)
                     return;
 
-                var users = await AddAdminAccounts(appDbContext, roles, seedDataSettings);
+                var users = await AddAdminAccounts(authDbContext, roles, seedDataSettings);
                 if (users.Count == 0)
                     return;
 
@@ -43,24 +42,24 @@ namespace AuthService.Persistence.SeedData
             }
         }
 
-        private static async Task<List<Role>> AddDefaultRoles(AppDbContext appDbContext)
+        private static async Task<List<Role>> AddDefaultRoles(AuthDbContext authDbContext)
         {
             var roles = new List<Role>();
-            if (appDbContext.Roles.Any())
+            if (authDbContext.Roles.Any())
                 return roles;
 
             roles.Add(new Role() { Name = AdminPolicy.RoleName });
 
-            await appDbContext.AddRangeAsync(roles);
-            await appDbContext.SaveChangesAsync();
+            await authDbContext.AddRangeAsync(roles);
+            await authDbContext.SaveChangesAsync();
 
             return roles;
         }
 
-        private static async Task<List<User>> AddAdminAccounts(AppDbContext appDbContext, List<Role> roles, SeedDataAppDbContextSettings seedDataSettings)
+        private static async Task<List<User>> AddAdminAccounts(AuthDbContext authDbContext, List<Role> roles, SeedDataAuthDbContextSettings seedDataSettings)
         {
             var users = new List<User>();
-            if (appDbContext.Users.Any())
+            if (authDbContext.Users.Any())
                 return users;
 
             var adminRole = roles
@@ -86,8 +85,8 @@ namespace AuthService.Persistence.SeedData
                 });
             }
 
-            await appDbContext.AddRangeAsync(users);
-            await appDbContext.SaveChangesAsync();
+            await authDbContext.AddRangeAsync(users);
+            await authDbContext.SaveChangesAsync();
 
             return users;
         }

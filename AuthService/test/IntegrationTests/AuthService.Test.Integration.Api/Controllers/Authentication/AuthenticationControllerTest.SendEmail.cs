@@ -82,8 +82,8 @@ namespace AuthService.Test.Integration.Api.Controllers.Authentication
                 }
             };
 
-            await _testHostFixture.AppDbContext.Users.AddAsync(user);
-            await _testHostFixture.AppDbContext.SaveChangesAsync();
+            await _testHostFixture.AuthDbContext.Users.AddAsync(user);
+            await _testHostFixture.AuthDbContext.SaveChangesAsync();
 
             var request = new SendEmailRequest()
             {
@@ -112,8 +112,8 @@ namespace AuthService.Test.Integration.Api.Controllers.Authentication
                 }
             };
 
-            await _testHostFixture.AppDbContext.Users.AddAsync(user);
-            await _testHostFixture.AppDbContext.SaveChangesAsync();
+            await _testHostFixture.AuthDbContext.Users.AddAsync(user);
+            await _testHostFixture.AuthDbContext.SaveChangesAsync();
 
             var request = new SendEmailRequest()
             {
@@ -130,7 +130,7 @@ namespace AuthService.Test.Integration.Api.Controllers.Authentication
             // Assert
             Assert.Equal(HttpStatusCode.InternalServerError, result.StatusCode);
 
-            var tokens = await _testHostFixture.AppDbContext.Tokens
+            var tokens = await _testHostFixture.AuthDbContext.Tokens
                 .Where(t => t.UserId.Equals(user.Id))
                 .ToListAsync();
             Assert.Empty(tokens);
@@ -167,12 +167,12 @@ namespace AuthService.Test.Integration.Api.Controllers.Authentication
                 }
             };
 
-            await _testHostFixture.AppDbContext.Users.AddAsync(user);
-            await _testHostFixture.AppDbContext.SaveChangesAsync();
+            await _testHostFixture.AuthDbContext.Users.AddAsync(user);
+            await _testHostFixture.AuthDbContext.SaveChangesAsync();
 
             var userId = user.Id;
-            _testHostFixture.AppDbContext.UntrackEntities(user.Tokens.ToArray());
-            _testHostFixture.AppDbContext.UntrackEntity(user);
+            _testHostFixture.AuthDbContext.UntrackEntities(user.Tokens.ToArray());
+            _testHostFixture.AuthDbContext.UntrackEntity(user);
 
             var request = new SendEmailRequest()
             {
@@ -186,7 +186,7 @@ namespace AuthService.Test.Integration.Api.Controllers.Authentication
             // Assert
             Assert.Equal(HttpStatusCode.OK, result.StatusCode);
 
-            var tokens = await _testHostFixture.AppDbContext.Tokens
+            var tokens = await _testHostFixture.AuthDbContext.Tokens
                 .Where(t => t.UserId.Equals(userId))
                 .ToListAsync();
             Assert.Equal(2, tokens.Count);

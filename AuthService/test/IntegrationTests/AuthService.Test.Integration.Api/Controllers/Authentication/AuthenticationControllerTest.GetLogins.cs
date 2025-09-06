@@ -104,8 +104,8 @@ namespace AuthService.Test.Integration.Api.Controllers.Authentication
                 }
             };
 
-            await _testHostFixture.AppDbContext.Users.AddAsync(user);
-            await _testHostFixture.AppDbContext.SaveChangesAsync();
+            await _testHostFixture.AuthDbContext.Users.AddAsync(user);
+            await _testHostFixture.AuthDbContext.SaveChangesAsync();
 
             var jwtToken = _jwt.GenerateJwtToken(new List<Claim>()
             {
@@ -125,8 +125,8 @@ namespace AuthService.Test.Integration.Api.Controllers.Authentication
             };
 
             var userId = user.Id;
-            _testHostFixture.AppDbContext.UntrackEntity(user.SecurityState);
-            _testHostFixture.AppDbContext.UntrackEntity(user);
+            _testHostFixture.AuthDbContext.UntrackEntity(user.SecurityState);
+            _testHostFixture.AuthDbContext.UntrackEntity(user);
 
             // Act
             var result = await _testHostFixture.Client.PostAsJsonAsync(_getLoginsEndpoint, request);
@@ -134,7 +134,7 @@ namespace AuthService.Test.Integration.Api.Controllers.Authentication
             // Assert
             Assert.Equal(HttpStatusCode.BadRequest, result.StatusCode);
 
-            var securityState = await _testHostFixture.AppDbContext.SecurityStates
+            var securityState = await _testHostFixture.AuthDbContext.SecurityStates
                 .Where(ss => ss.UserId.Equals(userId))
                 .FirstOrDefaultAsync();
             Assert.NotNull(securityState);
@@ -156,8 +156,8 @@ namespace AuthService.Test.Integration.Api.Controllers.Authentication
                 }
             };
 
-            await _testHostFixture.AppDbContext.Users.AddAsync(user);
-            await _testHostFixture.AppDbContext.SaveChangesAsync();
+            await _testHostFixture.AuthDbContext.Users.AddAsync(user);
+            await _testHostFixture.AuthDbContext.SaveChangesAsync();
 
             var jwtToken = _jwt.GenerateJwtToken(new List<Claim>()
             {
@@ -177,8 +177,8 @@ namespace AuthService.Test.Integration.Api.Controllers.Authentication
             };
 
             var userId = user.Id;
-            _testHostFixture.AppDbContext.UntrackEntity(user.SecurityState);
-            _testHostFixture.AppDbContext.UntrackEntity(user);
+            _testHostFixture.AuthDbContext.UntrackEntity(user.SecurityState);
+            _testHostFixture.AuthDbContext.UntrackEntity(user);
 
             // Act
             var result = await _testHostFixture.Client.PostAsJsonAsync(_getLoginsEndpoint, request);
@@ -186,7 +186,7 @@ namespace AuthService.Test.Integration.Api.Controllers.Authentication
             // Assert
             Assert.Equal(HttpStatusCode.Locked, result.StatusCode);
 
-            var securityState = await _testHostFixture.AppDbContext.SecurityStates
+            var securityState = await _testHostFixture.AuthDbContext.SecurityStates
                 .Where(ss => ss.UserId.Equals(userId))
                 .FirstOrDefaultAsync();
             Assert.NotNull(securityState);
@@ -214,8 +214,8 @@ namespace AuthService.Test.Integration.Api.Controllers.Authentication
                 }
             };
 
-            await _testHostFixture.AppDbContext.Users.AddAsync(user);
-            await _testHostFixture.AppDbContext.SaveChangesAsync();
+            await _testHostFixture.AuthDbContext.Users.AddAsync(user);
+            await _testHostFixture.AuthDbContext.SaveChangesAsync();
 
             var jwtToken = _jwt.GenerateJwtToken(new List<Claim>()
             {
@@ -235,8 +235,8 @@ namespace AuthService.Test.Integration.Api.Controllers.Authentication
             };
 
             var userId = user.Id;
-            _testHostFixture.AppDbContext.UntrackEntity(user.SecurityState);
-            _testHostFixture.AppDbContext.UntrackEntity(user);
+            _testHostFixture.AuthDbContext.UntrackEntity(user.SecurityState);
+            _testHostFixture.AuthDbContext.UntrackEntity(user);
 
             // Act
             var result = await _testHostFixture.Client.PostAsJsonAsync(_getLoginsEndpoint, request);
@@ -244,7 +244,7 @@ namespace AuthService.Test.Integration.Api.Controllers.Authentication
             // Assert
             Assert.Equal(HttpStatusCode.Locked, result.StatusCode);
 
-            var securityState = await _testHostFixture.AppDbContext.SecurityStates
+            var securityState = await _testHostFixture.AuthDbContext.SecurityStates
                 .Where(ss => ss.UserId.Equals(userId))
                 .FirstOrDefaultAsync();
             Assert.NotNull(securityState);
@@ -294,8 +294,8 @@ namespace AuthService.Test.Integration.Api.Controllers.Authentication
                 }
             };
 
-            await _testHostFixture.AppDbContext.Users.AddAsync(user);
-            await _testHostFixture.AppDbContext.SaveChangesAsync();
+            await _testHostFixture.AuthDbContext.Users.AddAsync(user);
+            await _testHostFixture.AuthDbContext.SaveChangesAsync();
 
             var jwtToken = _jwt.GenerateJwtToken(new List<Claim>()
             {
@@ -310,9 +310,9 @@ namespace AuthService.Test.Integration.Api.Controllers.Authentication
             };
 
             var userId = user.Id;
-            _testHostFixture.AppDbContext.UntrackEntities(user.Logins.ToArray());
-            _testHostFixture.AppDbContext.UntrackEntity(user.SecurityState);
-            _testHostFixture.AppDbContext.UntrackEntity(user);
+            _testHostFixture.AuthDbContext.UntrackEntities(user.Logins.ToArray());
+            _testHostFixture.AuthDbContext.UntrackEntity(user.SecurityState);
+            _testHostFixture.AuthDbContext.UntrackEntity(user);
 
             // Act
             var result = await _testHostFixture.Client.PostAsJsonAsync(_getLoginsEndpoint, request);
@@ -330,7 +330,7 @@ namespace AuthService.Test.Integration.Api.Controllers.Authentication
             Assert.NotNull(responseData);
             Assert.Equal(2, responseData.Count);
 
-            var securityState = await _testHostFixture.AppDbContext.SecurityStates
+            var securityState = await _testHostFixture.AuthDbContext.SecurityStates
                 .Where(ss => ss.UserId.Equals(userId))
                 .FirstOrDefaultAsync();
             Assert.NotNull(securityState);

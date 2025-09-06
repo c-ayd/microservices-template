@@ -53,8 +53,8 @@ namespace AuthService.Test.Integration.Api.Controllers.Authentication
                 }
             };
 
-            await _testHostFixture.AppDbContext.Users.AddAsync(user);
-            await _testHostFixture.AppDbContext.SaveChangesAsync();
+            await _testHostFixture.AuthDbContext.Users.AddAsync(user);
+            await _testHostFixture.AuthDbContext.SaveChangesAsync();
 
             var jwtToken = _jwt.GenerateJwtToken(new List<Claim>()
             {
@@ -64,8 +64,8 @@ namespace AuthService.Test.Integration.Api.Controllers.Authentication
             _testHostFixture.AddJwtBearerToken(jwtToken.AccessToken);
 
             var userId = user.Id;
-            _testHostFixture.AppDbContext.UntrackEntities(user.Logins.ToArray());
-            _testHostFixture.AppDbContext.UntrackEntity(user);
+            _testHostFixture.AuthDbContext.UntrackEntities(user.Logins.ToArray());
+            _testHostFixture.AuthDbContext.UntrackEntity(user);
 
             // Act
             var result = await _testHostFixture.Client.DeleteAsync(_deleteLoginEndpoint + Guid.NewGuid());
@@ -86,8 +86,8 @@ namespace AuthService.Test.Integration.Api.Controllers.Authentication
                 }
             };
 
-            await _testHostFixture.AppDbContext.Users.AddAsync(user);
-            await _testHostFixture.AppDbContext.SaveChangesAsync();
+            await _testHostFixture.AuthDbContext.Users.AddAsync(user);
+            await _testHostFixture.AuthDbContext.SaveChangesAsync();
 
             var jwtToken = _jwt.GenerateJwtToken(new List<Claim>()
             {
@@ -98,8 +98,8 @@ namespace AuthService.Test.Integration.Api.Controllers.Authentication
 
             var userId = user.Id;
             var loginId = user.Logins[0].Id;
-            _testHostFixture.AppDbContext.UntrackEntities(user.Logins.ToArray());
-            _testHostFixture.AppDbContext.UntrackEntity(user);
+            _testHostFixture.AuthDbContext.UntrackEntities(user.Logins.ToArray());
+            _testHostFixture.AuthDbContext.UntrackEntity(user);
 
             // Act
             var result = await _testHostFixture.Client.DeleteAsync(_deleteLoginEndpoint + loginId);
@@ -107,7 +107,7 @@ namespace AuthService.Test.Integration.Api.Controllers.Authentication
             // Assert
             Assert.Equal(HttpStatusCode.OK, result.StatusCode);
 
-            var login = await _testHostFixture.AppDbContext.Logins
+            var login = await _testHostFixture.AuthDbContext.Logins
                 .Where(l => l.Id.Equals(loginId))
                 .FirstOrDefaultAsync();
             Assert.Null(login);

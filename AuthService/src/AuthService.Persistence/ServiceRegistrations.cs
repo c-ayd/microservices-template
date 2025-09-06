@@ -13,7 +13,7 @@ namespace AuthService.Persistence
         public static void AddPersistenceServices(this IServiceCollection services, IConfiguration configuration)
         {
             var connStrings = configuration.GetSection(ConnectionStringsSettings.SettingsKey).Get<ConnectionStringsSettings>()!;
-            services.AddDbContext<AppDbContext>(options => options.UseNpgsql(connStrings.App));
+            services.AddDbContext<AuthDbContext>(options => options.UseNpgsql(connStrings.Auth));
 
             services.AddScoped<IUnitOfWork, UnitOfWork>();
         }

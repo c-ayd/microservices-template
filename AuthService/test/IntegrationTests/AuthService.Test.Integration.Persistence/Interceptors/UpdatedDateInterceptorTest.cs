@@ -8,14 +8,14 @@ using AuthService.Test.Utility.Fixtures.DbContexts;
 
 namespace AuthService.Test.Integration.Persistence.Interceptors
 {
-    [Collection(nameof(AppDbContextCollection))]
+    [Collection(nameof(AuthDbContextCollection))]
     public class UpdatedDateInterceptorTest
     {
-        private readonly AppDbContext _appDbContext;
+        private readonly AuthDbContext _authDbContext;
 
-        public UpdatedDateInterceptorTest(AppDbContextFixture appDbContextFixture)
+        public UpdatedDateInterceptorTest(AuthDbContextFixture authDbContextFixture)
         {
-            _appDbContext = appDbContextFixture.DbContext;
+            _authDbContext = authDbContextFixture.DbContext;
         }
 
         [Fact]
@@ -25,18 +25,18 @@ namespace AuthService.Test.Integration.Persistence.Interceptors
             var startTime = DateTime.UtcNow;
             var user = new User();
 
-            await _appDbContext.Users.AddAsync(user);
-            await _appDbContext.SaveChangesAsync();
+            await _authDbContext.Users.AddAsync(user);
+            await _authDbContext.SaveChangesAsync();
 
             var userId = user.Id;
 
             // Act
             user.Email = EmailGenerator.Generate();
-            await _appDbContext.SaveChangesAsync();
+            await _authDbContext.SaveChangesAsync();
 
             // Assert
-            _appDbContext.UntrackEntity(user);
-            var result = await _appDbContext.Users
+            _authDbContext.UntrackEntity(user);
+            var result = await _authDbContext.Users
                 .Where(u => u.Id.Equals(userId))
                 .FirstOrDefaultAsync();
 
