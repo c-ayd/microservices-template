@@ -1,0 +1,37 @@
+# NOTE: For this template, a simple self signed TLS certificate is created and saved in the K8S' secrets as 'localhost-tls'.
+# The rules are also implemented manually to ignore the prefix before forwarding the request to the services.
+# Normally, you would use more than one host (e.g. auth.myapp, admin.myapp) to manage the load balancer.
+
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: microservices-template-ingress
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/temporal-redirect-code: "308"
+spec:
+  ingressClassName: nginx
+  tls:
+    - hosts:
+      - localhost
+      secretName: localhost-tls
+  rules:
+    - host: localhost
+      http:
+        paths:
+          - path: /auth(/|$)(.*)
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: auth-service-clusterip-srv
+                port:
+                  number: 5080
+          - path: /admin(/|$)(.*)
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: admin-service-clusterip-srv
+                port:
+                  number: 7080
