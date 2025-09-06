@@ -115,7 +115,6 @@ namespace EmailService.Worker.Logging.Sinks
             command.CommandText = new StringBuilder()
                 .Append("CREATE TABLE public.\"").Append(_tableName).Append("\" (")
                 .Append("\"Id\" UUID PRIMARY KEY,")
-                .Append("\"CorrelationId\" UUID,")
                 .Append("\"TraceId\" TEXT,")
                 .Append("\"Timestamp\" TIMESTAMP WITHOUT TIME ZONE NOT NULL,")
                 .Append("\"ElapsedTimeInMs\" DOUBLE PRECISION NOT NULL,")
@@ -130,9 +129,7 @@ namespace EmailService.Worker.Logging.Sinks
                 .Append("\"ResponseStatusCode\" INTEGER,")
                 .Append("\"ResponseContentType\" TEXT,")
                 .Append("\"ResponseBody\" TEXT,")
-                .Append("\"LogEntries\" TEXT NOT NULL);")
-                .Append("CREATE INDEX idx_").Append(_tableName).Append("_correlationid ")
-                .Append("ON public.\"").Append(_tableName).Append("\" (\"CorrelationId\");")
+                .Append("\"LogEntries\" TEXT NOT NULL)")
                 .ToString();
             await command.ExecuteNonQueryAsync();
         }
@@ -153,7 +150,6 @@ namespace EmailService.Worker.Logging.Sinks
             var cmdBuilder = new StringBuilder()
                 .Append("INSERT INTO \"").Append(_tableName).Append("\"(")
                 .Append("\"Id\",")
-                .Append("\"CorrelationId\",")
                 .Append("\"TraceId\",")
                 .Append("\"Timestamp\",")
                 .Append("\"ElapsedTimeInMs\",")
@@ -174,7 +170,6 @@ namespace EmailService.Worker.Logging.Sinks
             {
                 cmdBuilder.Append("(")
                     .Append("@Id").Append(i).Append(',')
-                    .Append("@CorrelationId").Append(i).Append(',')
                     .Append("@TraceId").Append(i).Append(',')
                     .Append("@Timestamp").Append(i).Append(',')
                     .Append("@ElapsedTimeInMs").Append(i).Append(',')
@@ -197,7 +192,6 @@ namespace EmailService.Worker.Logging.Sinks
                 }
 
                 command.Parameters.AddWithValue($"Id{i}", Uuid.V7.Generate());
-                command.Parameters.AddWithValue($"CorrelationId{i}", buffer[i].CorrelationId);
                 command.Parameters.AddWithValue($"TraceId{i}", buffer[i].TraceId ?? (object)DBNull.Value);
                 command.Parameters.AddWithValue($"Timestamp{i}", buffer[i].Timestamp);
                 command.Parameters.AddWithValue($"ElapsedTimeInMs{i}", buffer[i].ElapsedTimeInMilliseconds);
