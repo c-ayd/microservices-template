@@ -1,0 +1,67 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: log-db-depl
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: log-db
+  template:
+    metadata:
+      labels:
+        app: log-db
+    spec:
+      containers:
+        - name: log-db
+          image: postgres:16.4
+          ports:
+            - containerPort: 5432           # NOTE: Change the port depending on your need. Make sure you also change the targetPort in the cluster IP
+          env:
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  name: secrets
+                  key: POSTGRES_USER
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: secrets
+                  key: POSTGRES_PASSWORD
+            - name: POSTGRES_DB
+              valueFrom:
+                secretKeyRef:
+                  name: secrets
+                  key: POSTGRES_DB
+          volumeMounts:
+            - name: log-db-volume
+              mountPath: /var/lib/postgresql/data
+      volumes:
+        - name: log-db-volume
+          persistentVolumeClaim:
+            claimName: log-db-volume-claim
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: log-db-clusterip-srv
+spec:
+  type: ClusterIP
+  selector:
+    app: log-db
+  ports:
+    - name: log-db
+      protocol: TCP
+      port: 5433                # NOTE: Change the ports depending on your need
+      targetPort: 5432
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: log-db-volume-claim
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5Gi              # NOTE: Change the storage size depending on your need
