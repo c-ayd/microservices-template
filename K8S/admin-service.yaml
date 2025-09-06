@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: admin-service-depl
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: admin-service
+  template:
+    metadata:
+      labels:
+        app: admin-service
+    spec:
+      containers: 
+        - name: admin-service
+          image: admin-service:latest
+          imagePullPolicy: IfNotPresent     # NOTE: This is used to get images from the local computer
+          ports:
+            - containerPort: 7080           # NOTE: Change the port depending on your need. Make sure you also change the targetPort in the cluster IP
+          envFrom:
+            - secretRef:
+                name: secrets
+          env:
+            - name: ASPNETCORE_ENVIRONMENT
+              value: "Production"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: admin-service-clusterip-srv
+spec:
+  type: ClusterIP
+  selector:
+    app: admin-service
+  ports:
+    - name: admin-service
+      protocol: TCP
+      port: 7080            # NOTE: Change the ports depending on your need
+      targetPort: 7080
