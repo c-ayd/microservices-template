@@ -4,12 +4,34 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 VisualStudioVersion = 17.11.35312.102
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "AuthService", "AuthService", "{D242EB7C-1B2D-4336-B69B-C15C6F643624}"
+	ProjectSection(SolutionItems) = preProject
+		AuthService\.dockerignore = AuthService\.dockerignore
+		AuthService\Dockerfile = AuthService\Dockerfile
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "EmailService", "EmailService", "{2415DC03-7838-417C-84EB-FF8F1255D7B3}"
+	ProjectSection(SolutionItems) = preProject
+		EmailService\.dockerignore = EmailService\.dockerignore
+		EmailService\Dockerfile = EmailService\Dockerfile
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "AdminService", "AdminService", "{26AB1AD0-A71D-4C0B-9318-BC02A8E585E9}"
+	ProjectSection(SolutionItems) = preProject
+		AdminService\.dockerignore = AdminService\.dockerignore
+		AdminService\Dockerfile = AdminService\Dockerfile
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "K8S", "K8S", "{E0954A75-CFE9-43D9-870E-5A3795D53E13}"
+	ProjectSection(SolutionItems) = preProject
+		K8S\admin-service.yaml = K8S\admin-service.yaml
+		K8S\auth-db.yaml = K8S\auth-db.yaml
+		K8S\auth-service.yaml = K8S\auth-service.yaml
+		K8S\email-service.yaml = K8S\email-service.yaml
+		K8S\ingress.yaml = K8S\ingress.yaml
+		K8S\log-db.yaml = K8S\log-db.yaml
+		K8S\rabbitmq.yaml = K8S\rabbitmq.yaml
+		K8S\secrets.yaml = K8S\secrets.yaml
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{C1DE214D-67B3-422A-8D31-4B9AC2DCAA45}"
 	ProjectSection(SolutionItems) = preProject
