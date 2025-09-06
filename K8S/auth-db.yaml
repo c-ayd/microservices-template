@@ -1,0 +1,67 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: auth-db-depl
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: auth-db
+  template:
+    metadata:
+      labels:
+        app: auth-db
+    spec:
+      containers:
+        - name: auth-db
+          image: postgres:16.4
+          ports:
+            - containerPort: 5432           # NOTE: Change the port depending on your need. Make sure you also change the targetPort in the cluster IP
+          env:
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  name: secrets
+                  key: POSTGRES_USER
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: secrets
+                  key: POSTGRES_PASSWORD
+            - name: POSTGRES_DB
+              valueFrom:
+                secretKeyRef:
+                  name: secrets
+                  key: POSTGRES_DB
+          volumeMounts:
+            - name: auth-db-volume
+              mountPath: /var/lib/postgresql/data
+      volumes:
+        - name: auth-db-volume
+          persistentVolumeClaim:
+            claimName: auth-db-volume-claim
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: auth-db-clusterip-srv
+spec:
+  type: ClusterIP
+  selector:
+    app: auth-db
+  ports:
+    - name: auth-db
+      protocol: TCP
+      port: 5432                # NOTE: Change the ports depending on your need
+      targetPort: 5432
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: auth-db-volume-claim
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Gi             # NOTE: Change the storage size depending on your need
